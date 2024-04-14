@@ -1,0 +1,7 @@
+public class #SCRIPTNAME# : PanelBase
+{
+    #NOTRIM#
+    #region UI Events
+    #NOTRIM#
+    #endregion
+}

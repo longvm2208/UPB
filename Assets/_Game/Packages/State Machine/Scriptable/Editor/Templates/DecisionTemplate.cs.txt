@@ -1,0 +1,11 @@
+using ScriptableStateMachine;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "State Machine/ScriptableObjects/Decision/#SCRIPTNAME#")]
+public class #SCRIPTNAME# : Decision
+{
+    public override bool Decide(StateController controller)
+    {
+        return false;
+    }
+}

@@ -1,0 +1,32 @@
+using UnityEditor;
+using UnityEditor.SceneManagement;
+
+public class SceneSwitcher
+{
+    private const string ScenesFolderPath = "Assets/Scenes/";
+
+    [MenuItem("Scenes/SampleScene #1")]
+    public static void OpenSampleScene()
+    {
+        OpenScene("SampleScene");
+    }
+
+    [MenuItem("Scenes/SampleScene #1", true)]
+    public static bool OpenSampleSceneValidate()
+    {
+        return OpenSceneValidate("SampleScene");
+    }
+
+    private static void OpenScene(string sceneName)
+    {
+        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+        {
+            EditorSceneManager.OpenScene(ScenesFolderPath + sceneName + ".unity");
+        }
+    }
+
+    private static bool OpenSceneValidate(string sceneName)
+    {
+        return System.IO.File.Exists(ScenesFolderPath + sceneName + ".unity");
+    }
+}

@@ -1,0 +1,11 @@
+using ScriptableStateMachine;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "State Machine/ScriptableObjects/Action/#SCRIPTNAME#")]
+public class #SCRIPTNAME# : Action
+{
+    public override void Act(StateController controller)
+    {
+        #NOTRIM#
+    }
+}
