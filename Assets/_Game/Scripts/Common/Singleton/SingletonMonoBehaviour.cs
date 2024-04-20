@@ -4,7 +4,7 @@ using UnityEngine;
 /// Provides a generic implementation for creating singleton MonoBehaviours.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : SingletonMonoBehaviour<T>
 {
     private static T instance;
 
@@ -19,7 +19,7 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBe
 
             if (instance == null)
             {
-                GameObject obj = new GameObject(typeof(T).Name + " Lazy Load");
+                GameObject obj = new GameObject(typeof(T).Name + "-LazyLoad");
                 instance = obj.AddComponent<T>();
             }
 
@@ -27,8 +27,5 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBe
         }
     }
 
-    public static bool HasInstance()
-    {
-        return instance != null;
-    }
+    public static bool HasInstance => instance != null;
 }

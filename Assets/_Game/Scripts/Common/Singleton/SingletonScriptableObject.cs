@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SingletonScriptableObject<T> : ScriptableObject where T : ScriptableObject
+public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
 {
     private static T instance;
 
@@ -14,11 +14,12 @@ public class SingletonScriptableObject<T> : ScriptableObject where T : Scriptabl
 
                 if (assets == null || assets.Length < 1)
                 {
-                    Debug.LogError("Could not find any singleton scriptable object instances in the resources");
+                    Debug.LogError("Could not find any instances");
+                    return null;
                 }
                 else if (assets.Length > 1)
                 {
-                    Debug.LogWarning("Multiple instances of the singleton scriptable object found in the resources");
+                    Debug.LogWarning("Multiple instances were found");
                 }
 
                 instance = assets[0];
