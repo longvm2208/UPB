@@ -8,12 +8,12 @@ public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
 {
 #if UNITY_ANDROID
     // TEST ID
-    //private const string appOpenAdUnitId = "ca-app-pub-3940256099942544/9257395921";
-    //private const string bannerAdUnitId = "ca-app-pub-3940256099942544/6300978111";
+    private const string appOpenAdUnitId = "ca-app-pub-3940256099942544/9257395921";
+    private const string bannerAdUnitId = "ca-app-pub-3940256099942544/6300978111";
 
     // RELEASE ID
-    private const string appOpenAdUnitId = "";
-    private const string bannerAdUnitId = "";
+    //private const string appOpenAdUnitId = "";
+    //private const string bannerAdUnitId = "";
 #elif UNITY_IOS
     private const string appOpenAdUnitId = "";
     private const string bannerAdUnitId = "";
