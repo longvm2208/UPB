@@ -2,8 +2,7 @@ using UnityEngine;
 
 public abstract class PopupBase : MonoBehaviour
 {
-    [SerializeField]
-    protected RectTransform myTransform;
+    [SerializeField] protected RectTransform myTransform;
 
     public virtual void Open(object args = null)
     {
@@ -16,10 +15,5 @@ public abstract class PopupBase : MonoBehaviour
     {
         UIManager.Instance.OnPopupClose();
         gameObject.SetActive(false);
-    }
-
-    public bool IsOpen()
-    {
-        return gameObject.activeSelf;
     }
 }

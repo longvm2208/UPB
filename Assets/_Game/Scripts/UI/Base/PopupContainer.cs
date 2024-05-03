@@ -1,3 +1,6 @@
+#define ADDRESSABLE
+
+#if ADDRESSABLE
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,3 +57,4 @@ public class PopupContainer : ScriptableObject
         }
     }
 }
+#endif

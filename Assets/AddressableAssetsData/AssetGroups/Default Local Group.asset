@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 5022374e2fbf34e4395211d74e085a69
+  m_SerializeEntries:
+  - m_GUID: c818b09e7124a114099a16d07fea0074
+    m_Address: Assets/_Game/Sprites/square_1x1.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31e389e5a0e8b5f47a9503f4354f6dae
+    m_Address: Assets/_Game/Prefabs/UI/Popups/Popup Lose.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e460a379d26cfc4f8919237e465dc63
+    m_Address: Assets/_Game/Prefabs/UI/Popups/Popup Spin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c47261d4ad80904791f45552528daee
+    m_Address: Assets/_Game/Prefabs/UI/Popups/Popup Win.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 4dbccb26d8dcf6040a8bbee7596c611c, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 47a33343ad0195b4fa10da0f1c087dd4, type: 2}
+    - {fileID: 11400000, guid: 591fd757a4722d44996eeb570455709e, type: 2}

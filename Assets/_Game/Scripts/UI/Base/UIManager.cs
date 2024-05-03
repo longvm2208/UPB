@@ -10,12 +10,9 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class UIManager : SingletonMonoBehaviour<UIManager>
 {
-    [SerializeField]
-    private PanelBase panel;
-    [SerializeField]
-    private RectTransform popupParent;
-    [SerializeField]
-    private GameObject blocker;
+    [SerializeField] private PanelBase panel;
+    [SerializeField] private RectTransform popupParent;
+    [SerializeField] private GameObject blocker;
     [SerializeField, ExposedScriptableObject]
     private PopupContainer container;
 
@@ -26,40 +23,44 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
     private List<AsyncOperationHandle<GameObject>> operationHandles;
 
     public bool HasOpenPopup => popupOpenCount > 0;
+    public PanelBase Panel => panel;
 
     private void OnDestroy()
     {
-        ReleasePopupReference();
+        if (!operationHandles.IsNullOrEmpty())
+        {
+            for (int i = 0; i < operationHandles.Count; i++)
+            {
+                Addressables.Release(operationHandles[i]);
+            }
+        }
     }
 
     #region PANEL
-    public T Panel<T>() where T : PanelBase => panel as T;
-
     public void EnablePanel()
     {
-        if (--panelDisableCount < 0)
-        {
-            panelDisableCount = 0;
-        }
-
-        if (panelDisableCount == 0)
-        {
-            panel.gameObject.SetActive(true);
-        }
+        panelDisableCount--;
+        panel.gameObject.SetActive(panelDisableCount <= 0);
     }
 
     public void DisablePanel()
     {
-        if (panelDisableCount == 0)
-        {
-            panel.gameObject.SetActive(false);
-        }
-
         panelDisableCount++;
+        panel.gameObject.SetActive(panelDisableCount <= 0);
     }
     #endregion
 
     #region POPUP
+    public void OnPopupOpen()
+    {
+        popupOpenCount++;
+    }
+
+    public void OnPopupClose()
+    {
+        popupOpenCount--;
+    }
+
     public bool IsPopupInstantiated(PopupId id)
     {
         return popupById.ContainsKey(id) && popupById[id] != null;
@@ -67,7 +68,7 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
 
     public bool IsPopupOpen(PopupId id)
     {
-        return IsPopupInstantiated(id) && popupById[id].IsOpen();
+        return IsPopupInstantiated(id) && popupById[id].gameObject.activeSelf;
     }
 
     public bool IsLoadingAsset(PopupId id)
@@ -75,26 +76,28 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
         return !container[id].IsDone;
     }
 
-    private T Popup<T>(PopupId id) where T : PopupBase
+    public PopupBase Popup(PopupId id)
     {
-        if (IsPopupOpen(id))
-        {
-            return popupById[id] as T;
-        }
-        else
+        if (!IsPopupOpen(id))
         {
             Debug.LogError($"Need to open popup first: {id}");
 
             return null;
         }
+
+        return popupById[id];
     }
 
     [Button(ButtonStyle.FoldoutButton)]
     public void OpenPopup(PopupId id, object args = null)
     {
-        if (popupById == null || operationHandles == null)
+        if (popupById == null)
         {
             popupById = new();
+        }
+
+        if (operationHandles == null)
+        {
             operationHandles = new();
         }
 
@@ -102,9 +105,9 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
         {
             PopupBase popup = popupById[id];
 
-            if (popup.IsOpen())
+            if (popup.gameObject.activeSelf)
             {
-                Debug.LogWarning($"Popup {id} is opening");
+                Debug.LogWarning($"Popup {id} is open");
                 return;
             }
 
@@ -153,7 +156,56 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
             }
         };
     }
+    #endregion
 
+    #region BLOCKER
+    public void EnableBlocker()
+    {
+        blockCount++;
+        blocker.SetActive(blockCount > 0);
+    }
+
+    public void DisableBlocker()
+    {
+        blockCount--;
+        blocker.SetActive(blockCount > 0);
+    }
+    #endregion
+}
+#elif RESOURCES
+using Sirenix.OdinInspector;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class UIManager : SingletonMonoBehaviour<UIManager>
+{
+    [SerializeField] private PanelBase panel;
+    [SerializeField] private RectTransform popupParent;
+    [SerializeField] private GameObject blocker;
+
+    private int blockCount = 0;
+    private int popupOpenCount = 0;
+    private int panelDisableCount = 0;
+    private Dictionary<PopupId, PopupBase> popupById;
+
+    public bool HasOpenPopup => popupOpenCount > 0;
+    public PanelBase Panel => panel;
+
+    #region PANEL
+    public void EnablePanel()
+    {
+        panelDisableCount--;
+        panel.gameObject.SetActive(panelDisableCount <= 0);
+    }
+
+    public void DisablePanel()
+    {
+        panelDisableCount++;
+        panel.gameObject.SetActive(panelDisableCount <= 0);
+    }
+    #endregion
+
+    #region POPUP
     public void OnPopupOpen()
     {
         popupOpenCount++;
@@ -164,166 +216,58 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
         popupOpenCount--;
     }
 
-    private void ReleasePopupReference()
+    public bool IsPopupInstantiated(PopupId id)
     {
-        if (operationHandles.IsNullOrEmpty()) return;
+        return popupById.ContainsKey(id) && popupById[id] != null;
+    }
 
-        for (int i = 0; i < operationHandles.Count; i++)
+    public bool IsPopupOpen(PopupId id)
+    {
+        return IsPopupInstantiated(id) && popupById[id].gameObject.activeSelf;
+    }
+
+    public PopupBase Popup(PopupId id)
+    {
+        if (!IsPopupOpen(id))
         {
-            Addressables.Release(operationHandles[i]);
+            Debug.LogError($"Need to open popup first: {id}");
+
+            return null;
         }
+
+        return popupById[id];
+    }
+
+    [Button(ButtonStyle.FoldoutButton)]
+    public void OpenPopup(PopupId id, object args = null)
+    {
+        if (popupById == null)
+        {
+            popupById = new();
+        }
+
+        if (!IsPopupInstantiated(id))
+        {
+            PopupBase prefab = Resources.Load<PopupBase>("Popup" + id.ToString());
+            popupById[id] = Instantiate(prefab, popupParent);
+        }
+
+        popupById[id].Open(args);
     }
     #endregion
 
     #region BLOCKER
     public void EnableBlocker()
     {
-        if (blockCount == 0)
-        {
-            blocker.SetActive(true);
-        }
-
         blockCount++;
+        blocker.SetActive(blockCount > 0);
     }
 
     public void DisableBlocker()
     {
-        if (--blockCount < 0)
-        {
-            blockCount = 0;
-        }
-
-        if (blockCount == 0)
-        {
-            blocker.SetActive(false);
-        }
+        blockCount--;
+        blocker.SetActive(blockCount > 0);
     }
     #endregion
 }
-#elif RESOURCES
-//using Sirenix.OdinInspector;
-//using System.Collections.Generic;
-//using UnityEngine;
-
-//public class UIManager : SingletonMonoBehaviour<UIManager>
-//{
-//    [SerializeField] private PanelBase panel;
-//    [SerializeField] private RectTransform popupParent;
-//    [SerializeField] private GameObject blocker;
-
-//    private int blockCount = 0;
-//    private int popupOpenCount = 0;
-//    private int panelDisableCount = 0;
-//    private Dictionary<PopupId, PopupBase> popupById;
-
-//    #region PANEL
-//    public T Panel<T>() where T : PanelBase => panel as T;
-
-//    public void EnablePanel()
-//    {
-//        if (--panelDisableCount < 0)
-//        {
-//            panelDisableCount = 0;
-//        }
-
-//        if (panelDisableCount == 0)
-//        {
-//            panel.gameObject.SetActive(true);
-//        }
-//    }
-
-//    public void DisablePanel()
-//    {
-//        if (panelDisableCount == 0)
-//        {
-//            panel.gameObject.SetActive(false);
-//        }
-
-//        panelDisableCount++;
-//    }
-//    #endregion
-
-//    #region POPUP
-//    public bool IsPopupInstantiated(PopupId id)
-//    {
-//        return popupById.ContainsKey(id) && popupById[id] != null;
-//    }
-
-//    public bool IsPopupOpen(PopupId id)
-//    {
-//        return IsPopupInstantiated(id) && popupById[id].IsOpen();
-//    }
-
-//    private T Popup<T>(PopupId id) where T : PopupBase
-//    {
-//        if (IsPopupOpen(id))
-//        {
-//            return popupById[id] as T;
-//        }
-//        else
-//        {
-//            Debug.LogError($"Need to open popup first: {id}");
-
-//            return null;
-//        }
-//    }
-
-//    [Button(ButtonStyle.FoldoutButton)]
-//    public void OpenPopup(PopupId id, object args = null)
-//    {
-//        if (popupById == null)
-//        {
-//            popupById = new();
-//        }
-
-//        if (!popupById.ContainsKey(id) || popupById[id] == null)
-//        {
-//            PopupBase prefab = Resources.Load<PopupBase>("Popup" + id.ToString());
-//            popupById[id] = Instantiate(prefab, popupParent);
-//        }
-
-//        popupById[id].Open(args);
-//    }
-
-//    public void OnPopupOpen()
-//    {
-//        popupOpenCount++;
-//    }
-
-//    public void OnPopupClose()
-//    {
-//        popupOpenCount--;
-//    }
-
-//    public bool HasOpenPopup()
-//    {
-//        return popupOpenCount > 0;
-//    }
-//    #endregion
-
-//    #region BLOCKER
-//    public void EnableBlocker()
-//    {
-//        if (blockCount == 0)
-//        {
-//            blocker.SetActive(true);
-//        }
-
-//        blockCount++;
-//    }
-
-//    public void DisableBlocker()
-//    {
-//        if (--blockCount < 0)
-//        {
-//            blockCount = 0;
-//        }
-
-//        if (blockCount == 0)
-//        {
-//            blocker.SetActive(false);
-//        }
-//    }
-//    #endregion
-//}
 #endif
