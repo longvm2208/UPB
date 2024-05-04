@@ -14,8 +14,7 @@ public static class GameObjectExtensions
     /// <param name="gameObject">The GameObject to get the component from or add the component to.</param>
     public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
     {
-        T component = gameObject.GetComponent<T>();
-        if (!component) component = gameObject.AddComponent<T>();
-        return component;
+        if (gameObject.TryGetComponent(out T component)) return component;
+        else return gameObject.AddComponent<T>();
     }
 }

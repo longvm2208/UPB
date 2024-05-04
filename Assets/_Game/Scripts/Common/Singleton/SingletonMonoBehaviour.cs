@@ -4,9 +4,9 @@ using UnityEngine;
 /// Provides a generic implementation for creating singleton MonoBehaviours.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : SingletonMonoBehaviour<T>
+public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : Component
 {
-    private static T instance;
+    protected static T instance;
 
     public static T Instance
     {

@@ -6,6 +6,7 @@ using Unity.Services.Core.Environments;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
+using UnityEngine.Purchasing.Security;
 
 public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreListener
 {
@@ -68,6 +69,7 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
         this.extensions = extensions;
 
         //FetchAdditionalProducts();
+        RestoreTransaction();
 
         isInitialized = true;
     }
@@ -108,11 +110,7 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
         return PurchaseProcessingResult.Complete;
     }
 
-    public void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason)
-    {
-        Debug.LogError($"Purchase failed. Product: {product.definition.id}. Reason: {failureReason}");
-    }
-
+    public void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason) { }
     public void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription)
     {
         Debug.LogError($"Purchase failed. Product: {product.definition.id}. Reason: {failureDescription.reason}. Details: {failureDescription.message}");
@@ -181,6 +179,29 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
                 Debug.LogError("Invalid product id");
                 break;
         }
+    }
+
+    private void RestoreTransaction()
+    {
+#if UNITY_ANDROID
+        foreach (var product in controller.products.all)
+        {
+            if (!product.availableToPurchase) continue;
+            if (product.receipt == null) continue;
+
+            switch (product.definition.type)
+            {
+                case ProductType.NonConsumable:
+                    break;
+                case ProductType.Subscription:
+                    break;
+                default:
+                    break;
+            }
+        }
+#elif UNITY_IOS || UNITY_STANDALONE_OSX
+#else
+#endif
     }
 
     public string GetLocalizedPriceString(string id)

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,14 @@ public static class RendererExtensions
             color.a = alpha;
             sr.color = color;
         }
+    }
+
+    public static Tweener DoFade(this SpriteRenderer sr, float from, float to, float duration)
+    {
+        return DOVirtual.Float(from, to, duration, value =>
+        {
+            sr.ChangeAlpha(value);
+        });
     }
 
     public static void ChangeAlpha(this TMP_Text text, float alpha)
