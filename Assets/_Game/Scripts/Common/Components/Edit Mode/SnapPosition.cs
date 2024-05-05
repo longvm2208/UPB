@@ -3,8 +3,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class SnapPosition : MonoBehaviour
 {
-    [SerializeField]
-    private Vector3 snap = Vector3.one;
+    [SerializeField] private Vector3 snap = Vector3.one;
 
     private void Update()
     {

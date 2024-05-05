@@ -3,10 +3,8 @@ using UnityEngine;
 
 public class MemoryUsageCounter : MonoBehaviour
 {
-    [SerializeField]
-    private int size = 25;
-    [SerializeField]
-    private Rect rect = new Rect(5, 35, 200, 50);
+    [SerializeField] private int size = 25;
+    [SerializeField] private Rect rect = new Rect(5, 35, 200, 50);
 
     private float memoryUsage;
     private WaitForSeconds wait = new WaitForSeconds(1f);

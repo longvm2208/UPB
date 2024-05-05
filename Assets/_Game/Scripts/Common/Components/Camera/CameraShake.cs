@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CameraShake : MonoBehaviour
 {
-    [SerializeField]
-    private Transform cameraTransform;
+    [SerializeField] private Transform cameraTransform;
 
     [Button(ButtonStyle.FoldoutButton)]
     public void ShakePosition(float duration, float magnitude)

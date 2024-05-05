@@ -3,12 +3,9 @@ using UnityEngine.EventSystems;
 
 public class CameraSwipe : MonoBehaviour
 {
-    [SerializeField]
-    private float speed = 0.5f;
-    [SerializeField]
-    private Vector2 maxBounds;
-    [SerializeField]
-    private Vector2 minBounds;
+    [SerializeField] private float speed = 0.5f;
+    [SerializeField] private Vector2 maxBounds;
+    [SerializeField] private Vector2 minBounds;
 
     [SerializeField]
     private Transform cameraTransform;

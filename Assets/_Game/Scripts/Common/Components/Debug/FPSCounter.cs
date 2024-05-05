@@ -3,10 +3,8 @@ using UnityEngine;
 
 public class FPSCounter : MonoBehaviour
 {
-    [SerializeField]
-    private int size = 25;
-    [SerializeField]
-    private Rect rect = new Rect(5, 5, 200, 50);
+    [SerializeField] private int size = 25;
+    [SerializeField] private Rect rect = new Rect(5, 5, 200, 50);
 
     private float fps;
     private WaitForSeconds wait = new WaitForSeconds(0.5f);

@@ -2,11 +2,10 @@ using MoreMountains.NiceVibrations;
 
 public class VibrationManager : SingletonMonoBehaviour<VibrationManager>
 {
-    private GameData gameData;
+    private GameData gameData => DataManager.instance.GameData;
 
     public void Initialize()
     {
-        gameData = DataManager.Instance.GameData;
         ToggleVibration();
     }
 

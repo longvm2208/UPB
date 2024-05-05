@@ -5,10 +5,8 @@ using UnityEngine;
 
 public class IAPButtonPurchase : MonoBehaviour
 {
-    [SerializeField, ValueDropdown("ids")]
-    private string id;
-    [SerializeField]
-    private TMP_Text priceTmp;
+    [SerializeField, ValueDropdown("ids")] private string id;
+    [SerializeField] private TMP_Text priceTmp;
 
     private static string[] ids = IAPProductId.Ids;
 

@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class SceneTransition : MonoBehaviour
 {
-    [SerializeField]
-    private Animator animator;
+    [SerializeField] private Animator animator;
 
     private bool isCloseComplete = true;
     private WaitForSeconds waitClose, waitOpen;

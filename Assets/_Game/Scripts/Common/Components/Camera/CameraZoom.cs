@@ -2,14 +2,10 @@ using UnityEngine;
 
 public class CameraZoom : MonoBehaviour
 {
-    [SerializeField]
-    private Camera myCamera;
-    [SerializeField, Min(0f)]
-    private float min = 1f;
-    [SerializeField, Min(0f)]
-    private float max = 8f;
-    [SerializeField, Min(0f)]
-    private float modifier = 0.01f;
+    [SerializeField] private Camera myCamera;
+    [SerializeField, Min(0f)] private float min = 1f;
+    [SerializeField, Min(0f)] private float max = 8f;
+    [SerializeField, Min(0f)] private float modifier = 0.01f;
 
     private void Update()
     {

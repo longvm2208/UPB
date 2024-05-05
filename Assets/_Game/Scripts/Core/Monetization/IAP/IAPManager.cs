@@ -16,8 +16,7 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
     private const string environment = "production";
 #endif
 
-    [SerializeField]
-    private GameObject blocker;
+    [SerializeField] private GameObject blocker;
     [SerializeField, ExposedScriptableObject]
     private IAPProductContainer container;
 

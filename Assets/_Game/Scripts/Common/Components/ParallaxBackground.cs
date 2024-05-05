@@ -3,10 +3,8 @@ using UnityEngine.UI;
 
 public class ParallaxBackground : MonoBehaviour
 {
-    [SerializeField]
-    private Image image;
-    [SerializeField]
-    private Vector2 speed = Vector2.one;
+    [SerializeField] private Image image;
+    [SerializeField] private Vector2 speed = Vector2.one;
 
     private void Start()
     {

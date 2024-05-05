@@ -4,8 +4,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
 {
     private const string Key = "GameData";
 
-    [SerializeField]
-    private GameData gameData;
+    [SerializeField] private GameData gameData;
 
     private bool isLoaded;
 

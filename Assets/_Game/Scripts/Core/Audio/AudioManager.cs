@@ -8,14 +8,10 @@ public class SoundByIdDictionary : SerializedDictionary<SoundId, AudioClip> { }
 
 public class AudioManager : SingletonMonoBehaviour<AudioManager>
 {
-    [SerializeField]
-    private AudioSource musicSource;
-    [SerializeField]
-    private AudioSource soundSource;
-    [SerializeField]
-    private MusicByIdDictionary musicById;
-    [SerializeField]
-    private SoundByIdDictionary soundById;
+    [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioSource soundSource;
+    [SerializeField] private MusicByIdDictionary musicById;
+    [SerializeField] private SoundByIdDictionary soundById;
 
     private AudioData audioData;
 

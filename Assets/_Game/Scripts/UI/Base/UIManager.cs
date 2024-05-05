@@ -19,8 +19,8 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
     private int blockCount = 0;
     private int popupOpenCount = 0;
     private int panelDisableCount = 0;
-    private Dictionary<PopupId, PopupBase> popupById;
-    private List<AsyncOperationHandle<GameObject>> operationHandles;
+    private Dictionary<PopupId, PopupBase> popupById = new();
+    private List<AsyncOperationHandle<GameObject>> operationHandles = new();
 
     public bool HasOpenPopup => popupOpenCount > 0;
     public PanelBase Panel => panel;
@@ -91,16 +91,6 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
     [Button(ButtonStyle.FoldoutButton)]
     public void OpenPopup(PopupId id, object args = null)
     {
-        if (popupById == null)
-        {
-            popupById = new();
-        }
-
-        if (operationHandles == null)
-        {
-            operationHandles = new();
-        }
-
         if (IsPopupInstantiated(id))
         {
             PopupBase popup = popupById[id];
@@ -186,7 +176,7 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
     private int blockCount = 0;
     private int popupOpenCount = 0;
     private int panelDisableCount = 0;
-    private Dictionary<PopupId, PopupBase> popupById;
+    private Dictionary<PopupId, PopupBase> popupById = new();
 
     public bool HasOpenPopup => popupOpenCount > 0;
     public PanelBase Panel => panel;
@@ -241,11 +231,6 @@ public class UIManager : SingletonMonoBehaviour<UIManager>
     [Button(ButtonStyle.FoldoutButton)]
     public void OpenPopup(PopupId id, object args = null)
     {
-        if (popupById == null)
-        {
-            popupById = new();
-        }
-
         if (!IsPopupInstantiated(id))
         {
             PopupBase prefab = Resources.Load<PopupBase>("Popup" + id.ToString());

@@ -9,8 +9,7 @@ public class SceneLoader : SingletonMonoBehaviour<SceneLoader>
 {
     public enum Mode { Before, With, After }
 
-    [SerializeField]
-    private SceneTransition transition;
+    [SerializeField] private SceneTransition transition;
 
     private bool isLoading;
     private SceneId currentScene = SceneId.None;

@@ -8,12 +8,9 @@ public class LookAtCamera : MonoBehaviour
         LookAtInverted,
     }
 
-    [SerializeField]
-    private Transform myTransform;
-    [SerializeField]
-    private Transform cameraTransform;
-    [SerializeField]
-    private Mode mode = Mode.LookAt;
+    [SerializeField] private Transform myTransform;
+    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Mode mode = Mode.LookAt;
 
     private Vector3 direction;
 

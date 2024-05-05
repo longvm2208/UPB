@@ -5,8 +5,7 @@ using UnityEngine.Networking;
 
 public class TimeFetcher : MonoBehaviour
 {
-    [SerializeField]
-    private bool isLocalTime;
+    [SerializeField] private bool isLocalTime;
 
     public void FetchTimeFromServer(int timeout = 3, Action<DateTime> onComplete = null)
     {
