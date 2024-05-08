@@ -1,7 +1,5 @@
 using DG.Tweening;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public static class RendererExtensions
 {
@@ -21,25 +19,5 @@ public static class RendererExtensions
         {
             sr.ChangeAlpha(value);
         });
-    }
-
-    public static void ChangeAlpha(this TMP_Text text, float alpha)
-    {
-        if (alpha >= 0f && alpha <= 1f)
-        {
-            Color color = text.color;
-            color.a = alpha;
-            text.color = color;
-        }
-    }
-
-    public static void ChangeAlpha(this Image image, float alpha)
-    {
-        if (alpha >= 0f && alpha <= 1f)
-        {
-            Color color = image.color;
-            color.a = alpha;
-            image.color = color;
-        }
     }
 }
