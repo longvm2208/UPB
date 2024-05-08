@@ -2,7 +2,7 @@ using MoreMountains.NiceVibrations;
 
 public class VibrationManager : SingletonMonoBehaviour<VibrationManager>
 {
-    private GameData gameData => DataManager.instance.GameData;
+    private GameData gameData => DataManager.Instance.GameData;
 
     public void Initialize()
     {
