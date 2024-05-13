@@ -28,4 +28,6 @@ public class SingletonScriptableObject<T> : ScriptableObject where T : Singleton
             return instance;
         }
     }
+
+    public bool HasInstance => instance != null;
 }
