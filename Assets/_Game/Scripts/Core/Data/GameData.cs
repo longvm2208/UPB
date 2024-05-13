@@ -1,18 +1,19 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
-public partial class GameData
+public class GameData
 {
-    public AudioData Audio;
-    public CommonData Common;
-    public CurrencyData Currency;
-    public LevelData Level;
+    [Header("AUDIO & VIBRATION")]
+    public bool IsSoundEnabled;
+    public bool IsMusicEnabled;
+    public bool IsVibrationEnabled;
 
     public GameData()
     {
-        Audio = new AudioData();
-        Common = new CommonData();
-        Currency = new CurrencyData();
-        Level = new LevelData();
+        // AUDIO & VIBRATION
+        IsSoundEnabled = true;
+        IsMusicEnabled = true;
+        IsVibrationEnabled = true;
     }
 }

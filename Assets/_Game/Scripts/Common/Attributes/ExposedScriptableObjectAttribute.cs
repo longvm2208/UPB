@@ -23,10 +23,12 @@ public class ExposedScriptableObjectAttributeDrawer : PropertyDrawer
         if (property.objectReferenceValue != null && property.isExpanded)
         {
             EditorGUI.indentLevel++;
+
             if (!editor)
             {
                 Editor.CreateCachedEditor(property.objectReferenceValue, null, ref editor);
             }
+
             editor.OnInspectorGUI();
             EditorGUI.indentLevel--;
         }

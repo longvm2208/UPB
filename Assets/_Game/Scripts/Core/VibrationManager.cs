@@ -11,11 +11,14 @@ public class VibrationManager : SingletonMonoBehaviour<VibrationManager>
 
     public void ToggleVibration()
     {
-        MMVibrationManager.SetHapticsActive(gameData.Common.IsVibrationEnabled);
+        MMVibrationManager.SetHapticsActive(gameData.IsVibrationEnabled);
     }
 
     public void Vibrate(HapticTypes type = HapticTypes.MediumImpact)
     {
-        MMVibrationManager.Haptic(type);
+        if (gameData.IsVibrationEnabled)
+        {
+            MMVibrationManager.Haptic(type);
+        }
     }
 }

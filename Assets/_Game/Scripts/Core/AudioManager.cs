@@ -13,18 +13,17 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
     [SerializeField] private MusicByIdDictionary musicById;
     [SerializeField] private SoundByIdDictionary soundById;
 
-    private AudioData audioData;
+    private GameData gameData => DataManager.Instance.GameData;
 
     public void Initialize()
     {
-        audioData = DataManager.Instance.GameData.Audio;
         ToggleAudioSource();
     }
 
     public void ToggleAudioSource()
     {
-        musicSource.enabled = audioData.IsMusicEnabled;
-        soundSource.enabled = audioData.IsSoundEnabled;
+        musicSource.enabled = gameData.IsMusicEnabled;
+        soundSource.enabled = gameData.IsSoundEnabled;
     }
 
     public void PlayMusic(MusicId id)
