@@ -10,7 +10,6 @@ public abstract class AnimationBase
     public float Interval => interval;
     public float Duration => duration;
 
-    public abstract void Init(int state);
-    public abstract void Forward();
-    public abstract void Backward();
+    public abstract void Prepare();
+    public abstract void Play();
 }

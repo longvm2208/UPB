@@ -5,20 +5,16 @@ using UnityEngine;
 [Serializable]
 public class Popping : AnimationBase
 {
+    [SerializeField] private FloatRange range;
     [SerializeField] private Transform transform;
 
-    public override void Init(int state)
+    public override void Prepare()
     {
-        transform.localScale = state * Vector3.one;
+        transform.localScale = range.min * Vector3.one;
     }
 
-    public override void Forward()
+    public override void Play()
     {
-        transform.DOScale(1f, duration).SetEase(Ease.OutBack);
-    }
-
-    public override void Backward()
-    {
-        transform.DOScale(0f, duration);
+        transform.DOScale(range.max, duration).SetEase(Ease.OutBack);
     }
 }

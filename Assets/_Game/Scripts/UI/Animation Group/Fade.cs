@@ -5,20 +5,16 @@ using UnityEngine;
 [Serializable]
 public class Fade : AnimationBase
 {
+    [SerializeField] private FloatRange range;
     [SerializeField] private CanvasGroup canvasGroup;
 
-    public override void Init(int state)
+    public override void Prepare()
     {
-        canvasGroup.alpha = state;
+        canvasGroup.alpha = range.min;
     }
 
-    public override void Forward()
+    public override void Play()
     {
-        canvasGroup.DOFade(1f, duration);
-    }
-
-    public override void Backward()
-    {
-        canvasGroup.DOFade(0f, duration);
+        canvasGroup.DOFade(range.max, duration);
     }
 }

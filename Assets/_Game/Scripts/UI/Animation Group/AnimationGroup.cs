@@ -6,23 +6,32 @@ using UnityEngine;
 [RequireComponent(typeof(CanvasGroup))]
 public class AnimationGroup : MonoBehaviour
 {
-    [Tooltip("0: Start of animation\n1: End of animation")]
-    [SerializeField] private int state;
+    [SerializeField] private bool isPlayOnEnable;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeReference] private List<AnimationBase> animations;
 
-    private IEnumerator coroutine;
-
-    public void Init()
+    private void OnValidate()
     {
-        animations.ForEach(animation => animation.Init(state));
+        canvasGroup = GetComponent<CanvasGroup>();
     }
 
-    public void Forward(Action onComplete = null)
+    private void OnEnable()
     {
-        coroutine.Stop(this);
-        coroutine = Routine();
-        coroutine.Start(this);
+        if (isPlayOnEnable)
+        {
+            Prepare();
+            Play();
+        }
+    }
+
+    public void Prepare()
+    {
+        animations.ForEach(a => a.Prepare());
+    }
+
+    public void Play(Action onComplete = null)
+    {
+        StartCoroutine(Routine());
 
         IEnumerator Routine()
         {
@@ -30,36 +39,15 @@ public class AnimationGroup : MonoBehaviour
 
             for (int i = 0; i < animations.Count; i++)
             {
-                yield return new WaitForSeconds(animations[i].Interval);
+                if (animations[i].Interval > 0f)
+                {
+                    yield return new WaitForSeconds(animations[i].Interval);
+                }
 
-                animations[i].Forward();
+                animations[i].Play();
             }
 
             yield return new WaitForSeconds(animations.Last().Duration);
-
-            canvasGroup.interactable = true;
-            onComplete?.Invoke();
-        }
-    }
-
-    public void Backward(Action onComplete = null)
-    {
-        coroutine.Stop(this);
-        coroutine = Routine();
-        coroutine.Start(this);
-
-        IEnumerator Routine()
-        {
-            canvasGroup.interactable = false;
-
-            for (int i = animations.Count - 1; i >= 0; i--)
-            {
-                animations[i].Backward();
-
-                yield return new WaitForSeconds(animations[i].Interval);
-            }
-
-            yield return new WaitForSeconds(animations[0].Duration);
 
             canvasGroup.interactable = true;
             onComplete?.Invoke();
