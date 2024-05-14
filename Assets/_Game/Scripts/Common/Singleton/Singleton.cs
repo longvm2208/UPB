@@ -1,8 +1,8 @@
 ﻿public class Singleton<T> where T : Singleton<T>, new()
 {
-    private T instance;
+    private static T instance;
     
-    public T Instance
+    public static T Instance
     {
         get
         {
@@ -11,5 +11,5 @@
         }
     }
 
-    public bool HasInstance => instance != null;
+    public static bool HasInstance => instance != null;
 }

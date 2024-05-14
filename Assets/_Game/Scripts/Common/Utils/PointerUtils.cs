@@ -1,21 +1,31 @@
-#if UNITY_ANDROID || UNITY_IOS
+using System.Collections.Generic;
 using UnityEngine;
-#endif
 using UnityEngine.EventSystems;
 
 public class PointerUtils
 {
-    public static bool IsOverUI()
+    public bool IsPointerOverUIElement(int UILayer)
     {
-#if UNITY_EDITOR
-        return EventSystem.current.IsPointerOverGameObject();
-#elif UNITY_ANDROID || UNITY_IOS
-        if (Input.touchCount == 0) return false;
-
-        Touch touch = Input.GetTouch(0);
-        return EventSystem.current.IsPointerOverGameObject(touch.fingerId);
-#else
-        return EventSystem.current.IsPointerOverGameObject();
-#endif
+        return IsPointerOverUIElement(GetEventSystemRaycastResults(), UILayer);
     }
+
+    private bool IsPointerOverUIElement(List<RaycastResult> results, int UILayer)
+    {
+        foreach (var result in results)
+        {
+            if (result.gameObject.layer == UILayer) return true;
+        }
+
+        return false;
+    }
+
+    private static List<RaycastResult> GetEventSystemRaycastResults()
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = Input.mousePosition;
+        List<RaycastResult> raycastResults = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, raycastResults);
+        return raycastResults;
+    }
+
 }

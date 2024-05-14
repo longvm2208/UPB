@@ -29,5 +29,5 @@ public class SingletonScriptableObject<T> : ScriptableObject where T : Singleton
         }
     }
 
-    public bool HasInstance => instance != null;
+    public static bool HasInstance => instance != null;
 }

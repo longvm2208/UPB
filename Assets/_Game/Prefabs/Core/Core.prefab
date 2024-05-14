@@ -46,50 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transition: {fileID: 1258479668843909311}
---- !u!1 &7584333610423029923
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7584333610423029920}
-  - component: {fileID: 7584333610423029921}
-  m_Layer: 0
-  m_Name: Vibration Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7584333610423029920
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7584333610423029923}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7584333611060911355}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7584333610423029921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7584333610423029923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c383438891086f449a464ec201790702, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7584333610439895773
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,15 +219,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameData:
-    Audio:
-      IsMusicEnabled: 1
-      IsSoundEnabled: 1
-    Common:
-      IsVibrationEnabled: 1
-    Currency:
-      CoinAmount: 0
-    Level:
-      Index: 0
+    IsSoundEnabled: 1
+    IsMusicEnabled: 1
+    IsVibrationEnabled: 1
 --- !u!1 &7584333610873159385
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,7 +441,6 @@ Transform:
   - {fileID: 7584333611666829492}
   - {fileID: 7584333610487614308}
   - {fileID: 7584333610950063445}
-  - {fileID: 7584333610423029920}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7584333611060911354
@@ -550,15 +499,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc7e1f152a3725f4c828486345140433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  config:
-    AppOpenAd:
-      IsShowOnSwitch: 0
-      ShowOnOpen: 0
-    Common:
-      WinCoinReward: 0
-    InterstitialAd:
-      EnableLevel: 0
-      Capping: 0
 --- !u!1001 &7584333609653094228
 PrefabInstance:
   m_ObjectHideFlags: 0
