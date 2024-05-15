@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class Fade : AnimationBase
+public class FadeCanvasGroup : AnimationBase
 {
     [SerializeField] private FloatRange range;
     [SerializeField] private CanvasGroup canvasGroup;

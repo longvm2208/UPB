@@ -4,6 +4,11 @@ public abstract class PopupBase : MonoBehaviour
 {
     [SerializeField] protected RectTransform myTransform;
 
+    protected virtual void OnValidate()
+    {
+        myTransform = GetComponent<RectTransform>();
+    }
+
     public virtual void Open(object args = null)
     {
         UIManager.Instance.OnPopupOpen();

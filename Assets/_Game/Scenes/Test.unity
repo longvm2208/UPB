@@ -409,10 +409,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlayOnEnable: 0
   canvasGroup: {fileID: 976673059}
-  animations: []
+  animations:
+  - rid: 5008931119484633090
+  - rid: 5008931119484633089
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5008931119484633089
+      type: {class: Popping, ns: , asm: Assembly-CSharp}
+      data:
+        interval: 0.25
+        duration: 0.5
+        range:
+          min: 0
+          max: 1
+        transform: {fileID: 1367628155}
+    - rid: 5008931119484633090
+      type: {class: FadeCanvasGroup, ns: , asm: Assembly-CSharp}
+      data:
+        interval: 0.25
+        duration: 0.5
+        range:
+          min: 0
+          max: 1
+        canvasGroup: {fileID: 976673059}
 --- !u!225 &976673059
 CanvasGroup:
   m_ObjectHideFlags: 0
