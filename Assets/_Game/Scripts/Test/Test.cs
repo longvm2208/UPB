@@ -3,20 +3,13 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    [Button]
-    public void Register()
-    {
-        EventDispatcher.RegisterListener(EventId.Example, TestMethod);
-    }
+    [SerializeField] private Transform worldTransform;
+    [SerializeField] private Canvas canvas;
+    [SerializeField] private RectTransform rectTransform;
+    [SerializeField] private Camera canvasCamera;
 
-    [Button]
-    public void Unregister()
+    private void Update()
     {
-        EventDispatcher.UnregisterListener(EventId.Example, TestMethod);
-    }
-
-    private void TestMethod(object args)
-    {
-        Debug.Log((int)args);
+        rectTransform.anchoredPosition = VectorUtils.WorldPositionToAnchorPosition(worldTransform.position, rectTransform.parent as RectTransform, canvas, canvasCamera);
     }
 }

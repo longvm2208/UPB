@@ -3,39 +3,11 @@ using UnityEngine;
 
 public class VectorUtils
 {
-    public static Vector2 WorldToCanvasCameraExpand(Vector3 position, float baseWidth = 1080f, float baseHeight = 1920f)
+    public static Vector2 WorldPositionToAnchorPosition(Vector3 worldPosition, RectTransform parent, Canvas canvas, Camera camera)
     {
-        float matchX = baseWidth;
-        float matchY = baseHeight;
-        float baseRatio = baseWidth / baseHeight;
-        float screenRatio = (float)Screen.width / Screen.height;
-
-        Vector2 screenPoint = Camera.main.WorldToScreenPoint(position);
-
-        if (screenRatio < baseRatio)
-        {
-            matchX = baseWidth;
-            matchY = matchX / screenRatio;
-        }
-        else if (screenRatio > baseRatio)
-        {
-            matchY = baseHeight;
-            matchX = matchY * screenRatio;
-        }
-
-        float convertRatio = matchX / Screen.width;
-
-        return screenPoint * convertRatio - new Vector2(matchX, matchY) * 0.5f;
-    }
-
-    public static Vector3 CanvasCameraToWorld(Vector2 canvasPos, Camera camera = null)
-    {
-        if (camera == null) camera = Camera.main;
-
-        Vector3 screenPos = (Vector3)canvasPos + Vector3.back * 5f;
-        Vector3 worldPos = camera.ScreenToWorldPoint(screenPos);
-
-        return worldPos;
+        Vector3 screenPoint = camera.WorldToScreenPoint(worldPosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screenPoint, canvas.worldCamera, out Vector2 localPoint);
+        return localPoint;
     }
 
 #if UNITY_EDITOR
