@@ -1,43 +1,32 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class CustomScroll : MonoBehaviour
+public class VerticalScroll : MonoBehaviour
 {
     [SerializeField] private float elasticity = 0.1f;
-    [SerializeField] private float scrollSpeed = 1f;
+    [SerializeField] private float modifier = 1f;
     [SerializeField] private float smoothDuration = 0.5f;
     [SerializeField] private RectTransform content;
     [SerializeField] private RectTransform root;
 
-    private Vector2 dragStartPosition;
-    private Vector2 dragPreviousPosition;
-    private Vector2 contentStartPosition;
-    private Vector2 contentStartDragPosition;
-    private Vector2 different;
-    private float velocity;
+    private Vector2 velocity;
     private IEnumerator smoothMoveCoroutine;
 
-    public void OnBeginDrag(PointerEventData eventData)
+    public void OnBeginDrag()
     {
-        dragStartPosition = eventData.position;
-        dragPreviousPosition = dragStartPosition;
-        contentStartPosition = content.anchoredPosition;
-        contentStartDragPosition = contentStartPosition;
-        different = Vector2.zero;
-        velocity = 0f;
         StopSmoothMove();
+
+        velocity = Vector2.zero;
     }
 
-    public void OnDrag(PointerEventData eventData)
+    public void OnDrag(Vector2 delta)
     {
-        Vector2 delta = eventData.position - dragStartPosition;
-        content.ChangeAnchorPosY(contentStartDragPosition.y + delta.y * scrollSpeed);
-        velocity = (eventData.position.y - dragPreviousPosition.y) / Time.deltaTime;
-        dragPreviousPosition = eventData.position;
+        delta.x = 0f;
+        content.anchoredPosition += modifier * delta;
+        velocity = delta / Time.deltaTime;
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public void OnEndDrag()
     {
         StartSmoothMove();
     }
@@ -57,7 +46,7 @@ public class CustomScroll : MonoBehaviour
         }
         else
         {
-            destination += velocity * elasticity;
+            destination += velocity.y * elasticity;
             destination = Mathf.Clamp(destination, 0f, maxY);
         }
 

@@ -8,9 +8,9 @@ public class PageButton : MonoBehaviour, IPointerClickHandler
     [SerializeField] private UnityEvent onDeselected;
 
     private int index;
-    private PageSwiper pageSwiper;
+    private PageSwipe pageSwiper;
 
-    public void OnInit(int index, PageSwiper pageSwiper)
+    public void OnInit(int index, PageSwipe pageSwiper)
     {
         this.index = index;
         this.pageSwiper = pageSwiper;

@@ -1,29 +1,23 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
-public class PageSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class PageSwipe : MonoBehaviour
 {
     [SerializeField] private bool canExceed = true;
     [SerializeField] private int startIndex = 1;
+    [SerializeField] private float modifier = 1.5f;
     [SerializeField] private float smoothMoveDuration = 0.5f;
     [SerializeField] private float percentThreshold = 0.2f;
     [SerializeField] private RectTransform root;
     [SerializeField] private GameObject[] pages;
     [SerializeField] private PageButton[] pageButtons;
-    [SerializeField] private UnityEvent<PointerEventData> onBeginDrag;
-    [SerializeField] private UnityEvent<PointerEventData> onDrag;
-    [SerializeField] private UnityEvent<PointerEventData> onEndDrag;
 
-    private bool isDragging;
     private bool isEnabled = true;
     private bool isCulling = true;
     private int currentIndex;
     private int minIndex;
     private int maxIndex;
     private Vector3 currentRootPosition;
-    private Vector2 previousDragPosition;
     private Vector2 different;
     private IEnumerator smoothMoveCoroutine;
 
@@ -45,53 +39,41 @@ public class PageSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         pageButtons[currentIndex].Select();
     }
 
-    public void OnBeginDrag(PointerEventData eventData)
+    public void OnBeginDrag()
     {
         if (Input.touchCount >= 2 || !isEnabled) return;
 
-        onBeginDrag?.Invoke(eventData);
-
-        isDragging = true;
         DisableCulling();
         StopSmoothMove();
 
-        previousDragPosition = eventData.position;
         different = Vector2.zero;
     }
 
-    public void OnDrag(PointerEventData eventData)
+    public void OnDrag(Vector2 delta)
     {
-        if (!isEnabled || !isDragging) return;
-
-        onDrag?.Invoke(eventData);
+        if (!isEnabled) return;
 
         if (isCulling)
         {
             DisableCulling();
         }
 
-        Vector2 delta = previousDragPosition - eventData.position;
-        previousDragPosition = eventData.position;
-
-        if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
-        {
-            different += delta;
-        }
+        delta.y = 0f;
+        delta = -delta;
+        different += delta;
 
         bool isExceeding = currentIndex == minIndex && delta.x < 0f;
         isExceeding = isExceeding || currentIndex == maxIndex && delta.x > 0f;
 
         if (!Mathf.Approximately(delta.x, 0f) && (canExceed || !isExceeding))
         {
-            root.position = currentRootPosition - new Vector3(different.x / 1.5f, 0, 0);
+            root.position = currentRootPosition - modifier * (Vector3)different;
         }
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public void OnEndDrag()
     {
-        if (!isEnabled || !isDragging) return;
-
-        onEndDrag?.Invoke(eventData);
+        if (!isEnabled) return;
 
         float percentage = different.x / Screen.width;
 
@@ -114,8 +96,6 @@ public class PageSwiper : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         {
             StartSmoothMove(currentRootPosition);
         }
-
-        isDragging = false;
     }
 
     private void EnableCulling()

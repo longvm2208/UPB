@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class SingleDirectionDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public enum Direction { None, Horizontal, Vertical }
 
@@ -11,46 +11,63 @@ public class SingleDirectionDrag : MonoBehaviour, IBeginDragHandler, IDragHandle
     [SerializeField] private UnityEvent onEndDrag;
 
     private bool isDragging;
+    private bool isEnabled = true;
     private Direction direction = Direction.None;
     private Vector2 previousPointerPosition;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (Input.touchCount >= 2)
+        if (Input.touchCount >= 2 || !isEnabled) return;
 
         isDragging = true;
         previousPointerPosition = eventData.position;
+
+        onBeginDrag?.Invoke();
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!isDragging) return;
+        if (!isDragging || !isEnabled) return;
 
         Vector2 delta = eventData.position - previousPointerPosition;
+        previousPointerPosition = eventData.position;
 
         if (delta.sqrMagnitude < 0.0001f) return;
 
         if (direction == Direction.None)
         {
-            direction = delta.x > delta.y ? Direction.Horizontal : Direction.Vertical;
+            if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+            {
+                direction = Direction.Horizontal;
+            }
+            else
+            {
+                direction = Direction.Vertical;
+            }
         }
 
-        switch (direction)
+        if (direction == Direction.Horizontal)
         {
-            case Direction.Horizontal:
-                break;
-            case Direction.Vertical:
-                break;
-            default:
-                Debug.LogError("Invalid direction");
-                break;
+            delta.y = 0f;
         }
+        else
+        {
+            delta.x = 0f;
+        }
+
+        onDrag?.Invoke(delta);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!isDragging) return;
+        if (!isDragging || !isEnabled) return;
 
+        isDragging = false;
         direction = Direction.None;
+
+        onEndDrag?.Invoke();
     }
+
+    public void Enable() => isEnabled = true;
+    public void Disable() => isEnabled = false;
 }
