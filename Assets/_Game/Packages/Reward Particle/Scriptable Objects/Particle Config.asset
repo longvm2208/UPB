@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3267db37340d2494ca986a39c05780c6, type: 3}
   m_Name: Particle Config
   m_EditorClassIdentifier: 
+  isRandom: 1
+  amount: 5
   resolution: 10
+  interval: 0.2
   moveDuration: 1.2
-  centerWeight:
-    min: 0.4
-    max: 0.5
-  downWeight:
-    min: 800
-    max: 1000
+  random: {x: 200, y: 0}
+  particlePrefab: {fileID: 5298125989843236495, guid: 03e1103cadc5fe54daf429794d9347be, type: 3}
   moveAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -33,8 +32,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.2937113
     - serializedVersion: 3
-      time: 0.25
-      value: 0.18
+      time: 0.2518921
+      value: 0.24759644
       inSlope: 0.54855126
       outSlope: 0.54855126
       tangentMode: 0
@@ -42,8 +41,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.24622115
     - serializedVersion: 3
-      time: 0.6
-      value: 0.3
+      time: 0.59621584
+      value: 0.3315552
       inSlope: 0.7990646
       outSlope: 0.7990646
       tangentMode: 0

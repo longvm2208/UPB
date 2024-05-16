@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GizmosUtils
@@ -26,6 +27,14 @@ public class GizmosUtils
             end = Vector3.Scale(end, cellSize) + center;
 
             Gizmos.DrawLine(start, end);
+        }
+    }
+
+    public static void DrawPath(params Vector3[] path)
+    {
+        for (int i = 0; i < path.Length - 1; i++)
+        {
+            Gizmos.DrawLine(path[i], path[i + 1]);
         }
     }
 }
