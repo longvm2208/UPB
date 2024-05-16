@@ -153,4 +153,16 @@ public static class RectTransformExtensions
         rt.offsetMax = new Vector2(rt.offsetMax.x, -top);
     }
     #endregion
+
+    #region SIZE DELTA
+    public static void ChangeSizeDeltaX(this RectTransform rt, float x)
+    {
+        rt.sizeDelta = new Vector2(x, rt.sizeDelta.y);
+    }
+
+    public static void ChangeSizeDeltaY(this RectTransform rt, float y)
+    {
+        rt.sizeDelta = new Vector2(rt.sizeDelta.x, y);
+    }
+    #endregion
 }
