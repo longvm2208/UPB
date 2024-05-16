@@ -3,12 +3,11 @@ using Firebase.Analytics;
 using Firebase.Extensions;
 using Firebase.RemoteConfig;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class FirebaseManager : SingletonMonoBehaviour<FirebaseManager>
+public class FirebaseManager : Singleton<FirebaseManager>
 {
     public struct CachedEvent
     {
@@ -23,9 +22,9 @@ public class FirebaseManager : SingletonMonoBehaviour<FirebaseManager>
     }
 
     private bool isReady;
+    private DebugDisplayer debug;
     private Queue<CachedEvent> cachedEvents = new Queue<CachedEvent>();
 
-    #region INITIALIZE
     public void Initialize()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
@@ -38,6 +37,7 @@ public class FirebaseManager : SingletonMonoBehaviour<FirebaseManager>
 
                 isReady = true;
                 FetchDataAsync();
+                LogCachedEvents();
             }
             else
             {
@@ -45,40 +45,8 @@ public class FirebaseManager : SingletonMonoBehaviour<FirebaseManager>
             }
         });
 
-        LogCachedEvents();
+        debug = UnityEngine.Object.FindObjectOfType<DebugDisplayer>();
     }
-
-    private void LogCachedEvents()
-    {
-        StartCoroutine(Routine());
-
-        IEnumerator Routine()
-        {
-            yield return new WaitUntil(() => isReady);
-
-            if (cachedEvents.Count > 0)
-            {
-                for (int i = 0; i < cachedEvents.Count; i++)
-                {
-                    LogCachedEvent(cachedEvents.Dequeue());
-                }
-            }
-        }
-    }
-
-    private void LogCachedEvent(CachedEvent cachedEvent)
-    {
-        LogEvent(cachedEvent.name, cachedEvent.parameters);
-    }
-    #endregion
-
-    #region SET USER PROPERTIES
-    private void SetUserProperty(string property, string value)
-    {
-        if (Debug.isDebugBuild || Application.isEditor) return;
-        FirebaseAnalytics.SetUserProperty(property, value);
-    }
-    #endregion
 
     #region REMOTE CONFIG
     public Task FetchDataAsync()
@@ -131,8 +99,16 @@ public class FirebaseManager : SingletonMonoBehaviour<FirebaseManager>
     }
     #endregion
 
+    #region USER PROPERTIES
+    private void SetUserProperty(string property, string value)
+    {
+        if (Debug.isDebugBuild || Application.isEditor) return;
+        FirebaseAnalytics.SetUserProperty(property, value);
+    }
+    #endregion
+
     #region LOG EVENT
-    public void LogEvent(string name, params Parameter[] parameters)
+    private void LogEvent(string name, params Parameter[] parameters)
     {
         if (Debug.isDebugBuild || Application.isEditor) return;
 
@@ -146,13 +122,31 @@ public class FirebaseManager : SingletonMonoBehaviour<FirebaseManager>
         }
     }
 
-    public void LogEvent(string name)
+    private void LogEvent(string name)
     {
         if (Debug.isDebugBuild || Application.isEditor || !isReady) return;
         FirebaseAnalytics.LogEvent(name);
     }
 
-    #region ADS
+    #region CACHED EVENT
+    private void LogCachedEvents()
+    {
+        if (cachedEvents.Count > 0)
+        {
+            for (int i = 0; i < cachedEvents.Count; i++)
+            {
+                LogCachedEvent(cachedEvents.Dequeue());
+            }
+        }
+    }
+
+    private void LogCachedEvent(CachedEvent cachedEvent)
+    {
+        LogEvent(cachedEvent.name, cachedEvent.parameters);
+    }
+    #endregion
+
+    #region ADS EVENT
     public void LogAdRevenuePaid(ImpressionData data)
     {
         LogEvent("ad_impression", data.ToParameters());
@@ -162,10 +156,13 @@ public class FirebaseManager : SingletonMonoBehaviour<FirebaseManager>
     {
         LogEvent("rewarded_ad_success",
             new Parameter("placement", placement));
+
+        debug.LogEvent("rewarded_ad_success",
+            new DebugParameter("placement", placement));
     }
     #endregion
 
-    #region IAP
+    #region IAP EVENT
     public void LogIAPPurchased(string id)
     {
         LogEvent("iap_purchased",
