@@ -5,45 +5,32 @@ using UnityEngine.Networking;
 
 public class TimeFetcher : MonoBehaviour
 {
-    [SerializeField] private bool isLocalTime;
+    [SerializeField] private string url = "https://www.google.com";
 
     public void FetchTimeFromServer(int timeout = 3, Action<DateTime> onComplete = null)
     {
-        if (isLocalTime)
+        StartCoroutine(Routine(timeout, onComplete));
+
+        IEnumerator Routine(int timeout, Action<DateTime> onComplete)
         {
-            DateTime startupTime = DateTime.Now - TimeSpan.FromSeconds(Time.realtimeSinceStartup);
-            onComplete?.Invoke(startupTime);
+            DateTime time;
+            UnityWebRequest request = new UnityWebRequest(url);
+            request.timeout = timeout;
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                string date = request.GetResponseHeaders()["date"];
+                time = DateTime.Parse(date);
+            }
+            else
+            {
+                Debug.LogWarning("Using local time");
+                time = DateTime.Now;
+            }
+
+            onComplete?.Invoke(time);
         }
-        else
-        {
-            StartCoroutine(FetchTimeFromServerRoutine(timeout, onComplete));
-        }
-    }
-
-    private IEnumerator FetchTimeFromServerRoutine(int timeout, Action<DateTime> onComplete)
-    {
-        DateTime startupTime;
-        UnityWebRequest request = new UnityWebRequest("https://www.google.com");
-        request.timeout = timeout;
-
-        yield return request.SendWebRequest();
-
-        bool isProtocolError = request.result == UnityWebRequest.Result.ProtocolError;
-        bool isConnectionError = request.result == UnityWebRequest.Result.ConnectionError;
-
-        if (isProtocolError || isConnectionError || request.error != null)
-        {
-            Debug.LogWarning("Using local time");
-            startupTime = DateTime.Now;
-        }
-        else
-        {
-            string date = request.GetResponseHeaders()["date"];
-            startupTime = DateTime.Parse(date);
-        }
-
-        startupTime -= TimeSpan.FromSeconds(Time.realtimeSinceStartup);
-
-        onComplete?.Invoke(startupTime);
     }
 }

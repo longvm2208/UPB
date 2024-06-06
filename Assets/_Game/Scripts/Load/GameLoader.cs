@@ -16,6 +16,8 @@ public class GameLoader : MonoBehaviour
     [SerializeField]
     private AssetReference reference;
 
+    private GameConfig gameConfig => GameManager.Instance.GameConfig;
+
     private void Awake()
     {
         if (reference != null)
@@ -31,10 +33,14 @@ public class GameLoader : MonoBehaviour
             SetProgress(value);
         });
 
-        timeFetcher.FetchTimeFromServer(1, (DateTime startupTime) =>
+        if (gameConfig.isInternetTime)
         {
-            GameManager.Instance.SetStartupTime(startupTime);
-        });
+            timeFetcher.FetchTimeFromServer(1, (DateTime startupTime) =>
+            {
+                startupTime -= TimeSpan.FromSeconds(Time.realtimeSinceStartup);
+                GameManager.Instance.SetStartupTime(startupTime);
+            });
+        }
 
         yield return new WaitForSeconds(1.5f);
 

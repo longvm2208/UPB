@@ -1225,6 +1225,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc7e1f152a3725f4c828486345140433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameConfig:
+    isInternetTime: 1
+    isEnableAds: 1
 --- !u!1 &2126068829
 GameObject:
   m_ObjectHideFlags: 0
