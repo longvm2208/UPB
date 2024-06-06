@@ -4,6 +4,6 @@ public class HomeBootstrapper : MonoBehaviour
 {
     private void Start()
     {
-        SceneLoader.Instance.OpenAnimation();
+        LoadSceneManager.Instance.OpenAnimation();
     }
 }

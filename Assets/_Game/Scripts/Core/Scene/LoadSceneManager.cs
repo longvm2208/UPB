@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 
-public class SceneLoader : SingletonMonoBehaviour<SceneLoader>
+public class LoadSceneManager : SingletonMonoBehaviour<LoadSceneManager>
 {
     public enum Mode { Before, With, After }
 

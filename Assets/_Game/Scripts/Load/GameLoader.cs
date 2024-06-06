@@ -44,7 +44,7 @@ public class GameLoader : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
 
-        SceneLoader.Instance.LoadScene(SceneId.Home, SceneLoader.Mode.Before, (float progress) =>
+        LoadSceneManager.Instance.LoadScene(SceneId.Home, LoadSceneManager.Mode.Before, (float progress) =>
         {
             SetProgress(0.6f + progress / 0.9f * 0.4f);
         }, () =>
