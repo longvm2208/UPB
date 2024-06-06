@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameLoader : MonoBehaviour
@@ -58,25 +57,4 @@ public class GameLoader : MonoBehaviour
     {
         fillImage.fillAmount = progress;
     }
-
-#if UNITY_EDITOR
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Initialize()
-    {
-        Scene scene = SceneManager.GetActiveScene();
-        CoreObject[] objects = FindObjectsOfType<CoreObject>();
-
-        if (!Enum.TryParse(scene.name, out SceneId sceneId) || objects == null || objects.Length == 0)
-        {
-            return;
-        }
-
-        if (sceneId != SceneId.Load)
-        {
-            DataManager.Instance.LoadData();
-            AudioManager.Instance.Initialize();
-            VibrationManager.Instance.Initialize();
-        }
-    }
-#endif
 }
