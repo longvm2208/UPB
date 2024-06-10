@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9011431395652235606}
   - component: {fileID: 4043782058179571219}
   m_Layer: 0
-  m_Name: Milestone
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

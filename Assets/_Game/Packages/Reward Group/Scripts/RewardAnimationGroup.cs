@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public partial class RewardGroup : MonoBehaviour
+public partial class RewardAnimationGroup : MonoBehaviour
 {
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private float particleFlyDuration = 1f;
@@ -56,7 +56,7 @@ public partial class RewardGroup : MonoBehaviour
     public bool IsComplete => working <= 0;
 
     [Button(ButtonStyle.FoldoutButton)]
-    public RewardGroup SetupCinematic(string placement)
+    public RewardAnimationGroup SetupCinematic(string placement)
     {
         this.placement = placement;
 
@@ -89,7 +89,7 @@ public partial class RewardGroup : MonoBehaviour
     }
 
     [Button(ButtonStyle.FoldoutButton)]
-    public RewardGroup AddCoin(int amount)
+    public RewardAnimationGroup AddCoin(int amount)
     {
         working++;
 
@@ -126,7 +126,7 @@ public partial class RewardGroup : MonoBehaviour
     }
 
     [Button(ButtonStyle.FoldoutButton)]
-    public RewardGroup AddInfiniteLife(int seconds)
+    public RewardAnimationGroup AddInfiniteLife(int seconds)
     {
         working++;
 
@@ -202,7 +202,7 @@ public partial class RewardGroup : MonoBehaviour
     }
 
     [Button(ButtonStyle.FoldoutButton)]
-    public RewardGroup AddExtraHole(int amount)
+    public RewardAnimationGroup AddExtraHole(int amount)
     {
         working++;
 
@@ -217,7 +217,7 @@ public partial class RewardGroup : MonoBehaviour
     }
 
     [Button(ButtonStyle.FoldoutButton)]
-    public RewardGroup AddHammer(int amount)
+    public RewardAnimationGroup AddHammer(int amount)
     {
         working++;
 
@@ -232,7 +232,7 @@ public partial class RewardGroup : MonoBehaviour
     }
 
     [Button(ButtonStyle.FoldoutButton)]
-    public RewardGroup AddDoubleToolbox(int amount)
+    public RewardAnimationGroup AddDoubleToolbox(int amount)
     {
         working++;
 

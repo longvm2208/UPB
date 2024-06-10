@@ -1,30 +1,30 @@
 ﻿using DG.Tweening;
-using System;
 using TMPro;
 using UnityEngine;
 
-public class SingleIconReward : RewardBase
+public class NormalReward : RewardAnimationBase
 {
-    [SerializeField] private string amountFormat = "x{0}";
+    [SerializeReference] private AmountModifier amountModifier = new AmountModifier();
+    [SerializeField] private float targetScale = 0.5f;
     [SerializeField] private TMP_Text amountTmp;
     [SerializeField] private RectTransform iconTransform;
-    [SerializeField] private RectTransform destination;
 
-    public override RewardBase OnInit(int amount)
+    public override RewardAnimationBase Init(int amount)
     {
         gameObject.SetActive(true);
         amountTmp.gameObject.SetActive(true);
-        amountTmp.text = string.Format(amountFormat, amount);
+        amountTmp.text = amountModifier.Modify(amount);
         iconTransform.localPosition = Vector3.zero;
-        iconTransform.localScale = Vector3.one;
+        iconTransform.localScale = Vector3.zero;
         iconTransform.DOScale(1f, 0.5f);
         return this;
     }
 
-    public override RewardBase Play(float duration)
+    public override RewardAnimationBase Play(float duration)
     {
         amountTmp.gameObject.SetActive(false);
         iconTransform.DOMove(destination.position, duration);
+        iconTransform.DOScale(targetScale, duration);
         return this;
     }
 }

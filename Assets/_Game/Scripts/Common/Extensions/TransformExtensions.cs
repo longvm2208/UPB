@@ -79,17 +79,19 @@ public static class TransformExtensions
 
     public static void DestroyChildren(this Transform parent)
     {
-        foreach (Transform child in parent)
+        if (Application.isPlaying)
         {
-            Object.Destroy(child.gameObject);
+            foreach (Transform child in parent)
+            {
+                Object.Destroy(child.gameObject);
+            }
         }
-    }
-
-    public static void DestroyChildrenImmediate(this Transform parent)
-    {
-        foreach (Transform child in parent)
+        else
         {
-            Object.DestroyImmediate(child.gameObject);
+            foreach (Transform child in parent)
+            {
+                Object.DestroyImmediate(child.gameObject);
+            }
         }
     }
 }

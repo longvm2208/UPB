@@ -3,17 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CanvasGroup))]
 public class AnimationGroup : MonoBehaviour
 {
     [SerializeField] private bool isPlayOnEnable;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeReference] private List<AnimationBase> animations;
-
-    private void OnValidate()
-    {
-        canvasGroup = GetComponent<CanvasGroup>();
-    }
 
     private void OnEnable()
     {

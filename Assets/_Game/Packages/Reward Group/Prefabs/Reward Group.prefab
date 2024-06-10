@@ -364,7 +364,7 @@ GameObject:
   - component: {fileID: 459994947685592953}
   - component: {fileID: 1098454967825149028}
   m_Layer: 5
-  m_Name: Reward Cinematic
+  m_Name: Reward Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
