@@ -9,21 +9,21 @@ public abstract class RewardAnimationBase : MonoBehaviour
     protected Action onComplete;
 
     [Button(ButtonStyle.FoldoutButton)]
-    public void SetDestination(Transform destination)
+    public abstract RewardAnimationBase Initialize(int amount);
+
+    [Button(ButtonStyle.FoldoutButton)]
+    public virtual RewardAnimationBase SetDestination(Transform destination)
     {
         this.destination = destination;
+
+        return this;
     }
 
     [Button(ButtonStyle.FoldoutButton)]
-    public abstract RewardAnimationBase Init(int amount);
+    public abstract RewardAnimationBase PlayAppearAnimation(float duration);
 
     [Button(ButtonStyle.FoldoutButton)]
-    public abstract RewardAnimationBase Play(float duration);
-
-    protected virtual string ModifyAmount(int amount)
-    {
-        return amount.ToString();
-    }
+    public abstract RewardAnimationBase PlayClaimAnimation(float duration);
 
     public virtual RewardAnimationBase OnReceiveReward(Action onReceiveReward)
     {

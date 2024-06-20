@@ -22,7 +22,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
     }
 
     private bool isReady;
-    private DebugDisplayer debug;
     private Queue<CachedEvent> cachedEvents = new Queue<CachedEvent>();
 
     public void Initialize()
@@ -44,8 +43,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
             }
         });
-
-        debug = UnityEngine.Object.FindObjectOfType<DebugDisplayer>();
     }
 
     #region REMOTE CONFIG
@@ -156,9 +153,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
     {
         LogEvent("rewarded_ad_success",
             new Parameter("placement", placement));
-
-        debug.LogEvent("rewarded_ad_success",
-            new DebugParameter("placement", placement));
     }
     #endregion
 
