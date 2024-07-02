@@ -102,7 +102,7 @@ public class PathUtils
         side = side >= 0 ? 1 : -1;
         Vector3 direction = (end - start).normalized;
         Vector3 perpendicular = new Vector3(side * direction.y, -side * direction.x, direction.z);
-        Vector3 center = (start + end) * centerWeight;
+        Vector3 center = (1 - centerWeight) * start + end * centerWeight;
         Vector3 control = center + perpendicular * sideWeight;
         return QuadraticBezier(amount, start, control, end);
     }
