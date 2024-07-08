@@ -118,7 +118,7 @@ public class PathUtils
         Vector3 corner = new Vector3(end.x, start.y, start.z);
         Vector3 direction = (corner - start).normalized;
         Vector3 perpendicular = new Vector3(direction.y, -direction.x, direction.z);
-        Vector3 center = (start + corner) * centerWeight;
+        Vector3 center = (1 - centerWeight) * start + end * centerWeight;
         Vector3 control = center + perpendicular * downWeight;
         return QuadraticBezier(amount, start, control, end);
     }
