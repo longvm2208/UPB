@@ -3,11 +3,11 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class Moving : AnimationBase
+public class MoveRectTransform : AnimationBase
 {
-    [SerializeField] private Vector3 start;
-    [SerializeField] private Vector3 end;
-    [SerializeField] private RectTransform rectTransform;
+    [SerializeField] Vector3 start;
+    [SerializeField] Vector3 end;
+    [SerializeField] RectTransform rectTransform;
 
     public override void Prepare()
     {

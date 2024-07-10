@@ -11,6 +11,14 @@ public class SceneTransition : MonoBehaviour
 
     public bool IsCloseComplete => isCloseComplete;
 
+    private void OnValidate()
+    {
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+    }
+
     public void Initialize()
     {
         foreach (var clip in animator.runtimeAnimatorController.animationClips)

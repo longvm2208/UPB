@@ -1,11 +1,13 @@
 ﻿using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+[Serializable]
 public class FadeGraphic : AnimationBase
 {
-    [SerializeField] private FloatRange range;
-    [SerializeField] private Graphic graphic;
+    [SerializeField] FloatRange range;
+    [SerializeField] Graphic graphic;
 
     public override void Prepare()
     {

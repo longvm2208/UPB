@@ -3,10 +3,10 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class Popping : AnimationBase
+public class ScaleTransform : AnimationBase
 {
-    [SerializeField] private FloatRange range;
-    [SerializeField] private Transform transform;
+    [SerializeField] FloatRange range;
+    [SerializeField] Transform transform;
 
     public override void Prepare()
     {

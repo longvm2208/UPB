@@ -5,8 +5,8 @@ using UnityEngine;
 [Serializable]
 public class FadeCanvasGroup : AnimationBase
 {
-    [SerializeField] private FloatRange range;
-    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] FloatRange range;
+    [SerializeField] CanvasGroup canvasGroup;
 
     public override void Prepare()
     {

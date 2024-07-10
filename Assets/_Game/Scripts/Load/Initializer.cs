@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
-public class GameLoader : MonoBehaviour
+public class Initializer : MonoBehaviour
 {
     [SerializeField]
     private Image fillImage;
