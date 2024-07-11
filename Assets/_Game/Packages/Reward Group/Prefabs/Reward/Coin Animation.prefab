@@ -92,6 +92,18 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 140
       objectReference: {fileID: 0}
+    - target: {fileID: 4914250870586438884, guid: 2ec258f0a24473a47b70bcfa17115e55, type: 3}
+      propertyPath: modifier
+      value: 7744334537505898575
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914250870586438884, guid: 2ec258f0a24473a47b70bcfa17115e55, type: 3}
+      propertyPath: managedReferences[7744334537505898575]
+      value: Assembly-CSharp AmountModifier
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914250870586438884, guid: 2ec258f0a24473a47b70bcfa17115e55, type: 3}
+      propertyPath: managedReferences[7744334537505898575].format
+      value: '{0}'
+      objectReference: {fileID: 0}
     - target: {fileID: 7532299109167627321, guid: 2ec258f0a24473a47b70bcfa17115e55, type: 3}
       propertyPath: m_Sprite
       value: 

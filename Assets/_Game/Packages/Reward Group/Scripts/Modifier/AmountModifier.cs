@@ -1,7 +1,7 @@
 ﻿using System;
 
 [Serializable]
-public class CurrencyModifier : ModifierBase
+public class AmountModifier : ModifierBase
 {
     public override string Modify(int amount)
     {
