@@ -45,8 +45,10 @@ public class LoadSceneManager : SingletonMonoBehaviour<LoadSceneManager>
     }
 
     [Button(ButtonStyle.FoldoutButton)]
-    public void LoadScene(SceneId sceneId, Mode mode = Mode.After,
-        Action<float> onLoading = null, Action onComplete = null)
+    public void LoadScene(SceneId sceneId,
+        [HideInInspector] Mode mode = Mode.After,
+        [HideInInspector] Action<float> onLoading = null,
+        [HideInInspector] Action onComplete = null)
     {
         isLoading = true;
 

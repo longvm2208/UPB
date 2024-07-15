@@ -5,16 +5,18 @@ using UnityEngine;
 [Serializable]
 public class ScaleTransform : AnimationBase
 {
-    [SerializeField] FloatRange range;
+    [SerializeField] Vector3 start;
+    [SerializeField] Vector3 end;
     [SerializeField] Transform transform;
+    [SerializeField] Ease ease;
 
     public override void Prepare()
     {
-        transform.localScale = range.min * Vector3.one;
+        transform.localScale = start;
     }
 
     public override void Play()
     {
-        transform.DOScale(range.max, duration).SetEase(Ease.OutBack);
+        transform.DOScale(end, duration).SetEase(ease);
     }
 }

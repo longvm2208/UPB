@@ -5,12 +5,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 {
     private const int TargetFps = 60;
 
-    [SerializeField] private GameConfig gameConfig;
-
     private DateTime startupTime;
 
     public DateTime Now => startupTime + TimeSpan.FromSeconds(Time.realtimeSinceStartup);
-    public GameConfig GameConfig => gameConfig;
 
     private void Awake()
     {

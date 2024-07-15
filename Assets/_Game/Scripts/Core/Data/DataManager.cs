@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DataManager : SingletonMonoBehaviour<DataManager>
 {
@@ -9,7 +9,19 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
     private bool isLoaded;
 
     public bool IsLoaded => isLoaded;
-    public GameData GameData => gameData;
+    public GameData GameData
+    {
+        get
+        {
+            if (!isLoaded)
+            {
+                Debug.LogError("Cần load data trước khi sử dụng");
+                return null;
+            }
+
+            return gameData;
+        }
+    }
 
     private void OnApplicationPause(bool pause)
     {

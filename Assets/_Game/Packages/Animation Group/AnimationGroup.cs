@@ -9,7 +9,10 @@ public class AnimationGroup : MonoBehaviour
     [SerializeField] CanvasGroup canvasGroup;
     [SerializeReference] List<IElement> elements;
 
+    bool isComplete;
     WaitForSeconds waitLastAnimation;
+
+    public bool IsComplete => isComplete;
 
     void OnEnable()
     {
@@ -69,6 +72,7 @@ public class AnimationGroup : MonoBehaviour
 
             yield return waitLastAnimation;
 
+            isComplete = true;
             canvasGroup.interactable = true;
             onComplete?.Invoke();
         }

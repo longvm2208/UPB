@@ -6,12 +6,11 @@ using UnityEngine;
 
 public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
 {
-#if UNITY_ANDROID
     // TEST ID
     private const string appOpenAdUnitId = "ca-app-pub-3940256099942544/9257395921";
     private const string bannerAdUnitId = "ca-app-pub-3940256099942544/6300978111";
-
     // RELEASE ID
+#if UNITY_ANDROID
     //private const string appOpenAdUnitId = "";
     //private const string bannerAdUnitId = "";
 #elif UNITY_IOS
@@ -22,11 +21,13 @@ public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
     private const string bannerAdUnitId = "";
 #endif
 
+    private bool canRequestAd;
     private bool isInitialized;
     private DateTime expireTime;
     private AppOpenAd appOpenAd;
     private BannerView bannerView;
 
+    public bool CanRequestAd => canRequestAd;
     public bool IsInitialized => isInitialized;
     public bool IsAppOpenAdAvailable => appOpenAd != null && appOpenAd.CanShowAd() && DateTime.Now < expireTime;
 
@@ -35,17 +36,90 @@ public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
         AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
     }
 
+    private void Start()
+    {
+        // Create a ConsentRequestParameters object.
+        ConsentRequestParameters request = new ConsentRequestParameters();
+
+        // Check the current consent information status.
+        ConsentInformation.Update(request, OnConsentInfoUpdated);
+    }
+
     private void OnDestroy()
     {
         AppStateEventNotifier.AppStateChanged -= OnAppStateChanged;
     }
 
-    private void OnAppStateChanged(AppState state)
+    void OnAppStateChanged(AppState state)
     {
         if (state == AppState.Foreground)
         {
             //ShowAppOpenAd();
         }
+    }
+
+    void OnConsentInfoUpdated(FormError consentError)
+    {
+        try
+        {
+            if (consentError != null)
+            {
+                // Handle the error.
+                Debug.LogError(consentError);
+
+                canRequestAd = true;
+
+                return;
+            }
+
+            // If the error is null, the consent information state was updated.
+            // You are now ready to check if a form is available.
+            ConsentForm.LoadAndShowConsentFormIfRequired((FormError formError) =>
+            {
+                if (formError != null)
+                {
+                    // Consent gathering failed.
+                    Debug.LogError(formError);
+
+                    canRequestAd = true;
+
+                    return;
+                }
+
+                // Consent has been gathered.
+                canRequestAd = true;
+            });
+
+            if (ConsentInformation.CanRequestAds())
+            {
+                canRequestAd = true;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+
+            canRequestAd = true;
+        }
+    }
+
+    public bool IsPrivacyOptionsRequired()
+    {
+        return ConsentInformation.PrivacyOptionsRequirementStatus ==
+            PrivacyOptionsRequirementStatus.Required;
+    }
+
+    public void ShowPrivacyOptionsForm()
+    {
+        Debug.Log("Showing privacy options form.");
+
+        ConsentForm.ShowPrivacyOptionsForm((FormError showError) =>
+        {
+            if (showError != null)
+            {
+                Debug.LogError("Error showing privacy options form with error: " + showError.Message);
+            }
+        });
     }
 
     public void Initialize()
@@ -59,12 +133,6 @@ public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
             LoadAppOpenAd();
             LoadBannerAd(false);
         });
-    }
-
-    public bool IsConsentFormRequired()
-    {
-        return ConsentInformation.PrivacyOptionsRequirementStatus ==
-            PrivacyOptionsRequirementStatus.Required;
     }
 
     #region APP OPEN AD
@@ -93,7 +161,7 @@ public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
         });
     }
 
-    private void RegisterEventHandlers(AppOpenAd ad)
+    void RegisterEventHandlers(AppOpenAd ad)
     {
         // Raised when the ad is estimated to have earned money.
         ad.OnAdPaid += (AdValue adValue) =>
@@ -163,7 +231,7 @@ public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
         RegisterEventHandlers(bannerView);
     }
 
-    private void RegisterEventHandlers(BannerView bannerView)
+    void RegisterEventHandlers(BannerView bannerView)
     {
         bannerView.OnAdPaid += (AdValue adValue) =>
         {

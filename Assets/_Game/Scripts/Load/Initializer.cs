@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -16,8 +16,6 @@ public class Initializer : MonoBehaviour
     [SerializeField]
     private AssetReference reference;
 
-    private GameConfig gameConfig => GameManager.Instance.GameConfig;
-
     private void Awake()
     {
         if (reference != null)
@@ -33,7 +31,7 @@ public class Initializer : MonoBehaviour
             SetProgress(value);
         });
 
-        if (gameConfig.isInternetTime)
+        if (ConfigManager.Instance.IsInternetTime)
         {
             timeFetcher.FetchTimeFromServer(1, (DateTime startupTime) =>
             {
@@ -42,6 +40,7 @@ public class Initializer : MonoBehaviour
             });
         }
 
+        // Đợi để lấy time internet
         yield return new WaitForSeconds(1.5f);
 
         DataManager.Instance.LoadData();

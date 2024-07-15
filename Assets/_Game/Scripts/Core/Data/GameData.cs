@@ -9,11 +9,17 @@ public class GameData
     public bool IsMusicEnabled;
     public bool IsVibrationEnabled;
 
+    [Header("IAP")]
+    public bool IsRemoveAds;
+
     public GameData()
     {
         // AUDIO & VIBRATION
         IsSoundEnabled = true;
         IsMusicEnabled = true;
         IsVibrationEnabled = true;
+
+        // IAP
+        IsRemoveAds = false;
     }
 }

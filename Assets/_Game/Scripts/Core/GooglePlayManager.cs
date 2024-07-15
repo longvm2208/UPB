@@ -3,7 +3,7 @@ using Google.Play.Review;
 using System.Collections;
 using UnityEngine;
 
-public class PlayCoreSdk : MonoBehaviour
+public class GooglePlayManager : MonoBehaviour
 {
     public void RequestAndLaunchInAppReview()
     {
