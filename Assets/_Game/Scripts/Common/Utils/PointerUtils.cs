@@ -4,28 +4,27 @@ using UnityEngine.EventSystems;
 
 public class PointerUtils
 {
-    public bool IsPointerOverUIElement(int UILayer)
+    public bool IsOverUI(int layer)
     {
-        return IsPointerOverUIElement(GetEventSystemRaycastResults(), UILayer);
+        return IsOverUI(GetEventSystemRaycastResults(), layer);
     }
 
-    private bool IsPointerOverUIElement(List<RaycastResult> results, int UILayer)
+    bool IsOverUI(List<RaycastResult> results, int layer)
     {
         foreach (var result in results)
         {
-            if (result.gameObject.layer == UILayer) return true;
+            if (result.gameObject.layer == layer) return true;
         }
 
         return false;
     }
 
-    private static List<RaycastResult> GetEventSystemRaycastResults()
+    static List<RaycastResult> GetEventSystemRaycastResults()
     {
         PointerEventData eventData = new PointerEventData(EventSystem.current);
         eventData.position = Input.mousePosition;
-        List<RaycastResult> raycastResults = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, raycastResults);
-        return raycastResults;
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        return results;
     }
-
 }

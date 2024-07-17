@@ -6,46 +6,48 @@ using UnityEngine;
 
 public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
 {
-    // TEST ID
-    private const string appOpenAdUnitId = "ca-app-pub-3940256099942544/9257395921";
-    private const string bannerAdUnitId = "ca-app-pub-3940256099942544/6300978111";
-    // RELEASE ID
-#if UNITY_ANDROID
-    //private const string appOpenAdUnitId = "";
-    //private const string bannerAdUnitId = "";
-#elif UNITY_IOS
-    private const string appOpenAdUnitId = "";
-    private const string bannerAdUnitId = "";
-#else
-    private const string appOpenAdUnitId = "";
-    private const string bannerAdUnitId = "";
-#endif
+    // TEST
+    const string appOpenAdUnitId = "ca-app-pub-3940256099942544/9257395921";
+    const string bannerAdUnitId = "ca-app-pub-3940256099942544/6300978111";
 
-    private bool canRequestAd;
-    private bool isInitialized;
-    private DateTime expireTime;
-    private AppOpenAd appOpenAd;
-    private BannerView bannerView;
+    // PRODUCT
+//#if UNITY_ANDROID
+//    const string appOpenAdUnitId = "";
+//    const string bannerAdUnitId = "";
+//#elif UNITY_IOS
+//    const string appOpenAdUnitId = "";
+//    const string bannerAdUnitId = "";
+//#else
+//    const string appOpenAdUnitId = "";
+//    const string bannerAdUnitId = "";
+//#endif
+
+    [SerializeField] bool checkConsentStatusOnStart = false;
+
+    bool canRequestAd;
+    bool isInitialized;
+    DateTime expireTime;
+    AppOpenAd appOpenAd;
+    BannerView bannerView;
 
     public bool CanRequestAd => canRequestAd;
     public bool IsInitialized => isInitialized;
     public bool IsAppOpenAdAvailable => appOpenAd != null && appOpenAd.CanShowAd() && DateTime.Now < expireTime;
 
-    private void Awake()
+    void Awake()
     {
         AppStateEventNotifier.AppStateChanged += OnAppStateChanged;
     }
 
-    private void Start()
+    void Start()
     {
-        // Create a ConsentRequestParameters object.
-        ConsentRequestParameters request = new ConsentRequestParameters();
-
-        // Check the current consent information status.
-        ConsentInformation.Update(request, OnConsentInfoUpdated);
+        if (checkConsentStatusOnStart)
+        {
+            CheckConsentStatus();
+        }
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
         AppStateEventNotifier.AppStateChanged -= OnAppStateChanged;
     }
@@ -56,6 +58,15 @@ public class AdMobManager : SingletonMonoBehaviour<AdMobManager>
         {
             //ShowAppOpenAd();
         }
+    }
+
+    public void CheckConsentStatus()
+    {
+        // Create a ConsentRequestParameters object.
+        ConsentRequestParameters request = new ConsentRequestParameters();
+
+        // Check the current consent information status.
+        ConsentInformation.Update(request, OnConsentInfoUpdated);
     }
 
     void OnConsentInfoUpdated(FormError consentError)

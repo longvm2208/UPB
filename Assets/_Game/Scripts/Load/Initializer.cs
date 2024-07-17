@@ -31,7 +31,7 @@ public class Initializer : MonoBehaviour
             SetProgress(value);
         });
 
-        if (ConfigManager.Instance.IsInternetTime)
+        if (GameSettings.Instance.IsInternetTime)
         {
             timeFetcher.FetchTimeFromServer(1, (DateTime startupTime) =>
             {

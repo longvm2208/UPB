@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MaxManager : SingletonMonoBehaviour<MaxManager>
 {
+#if APPLOVIN_MAX
     [SerializeField] bool enableMediationDebugger = false;
     [SerializeField] bool isAdaptiveBanner = true;
     [SerializeField] Color bannerColor = new Color(0f, 0f, 0f, 0f);
@@ -28,30 +29,44 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
     const string MrecAdUnitId = "";
 #endif
 
-    public event Action OnInitialized;
+    public event Action Initialized;
 
-    public event Action OnInterstitialAdLoaded;
-    public event Action OnInterstitialAdDisplayed;
-    public event Action OnInterstitialAdFailedToDisplay;
-    public event Action OnInterstitialAdClicked;
+    public event Action InterstitialAdLoaded;
+    public event Action InterstitialAdDisplayed;
+    public event Action InterstitialAdFailedToDisplay;
+    public event Action InterstitialAdClicked;
 
-    public event Action OnRewardedAdLoaded;
-    public event Action OnRewardedAdDisplayed;
-    public event Action<MaxSdkBase.ErrorInfo> OnRewardedAdFailedToDisplay;
-    public event Action OnRewardedAdHidden;
-    public event Action OnRewardedAdReceivedReward;
+    public event Action RewardedAdLoaded;
+    public event Action RewardedAdDisplayed;
+    public event Action<string> RewardedAdFailedToDisplay;
+    public event Action RewardedAdHidden;
+    public event Action RewardedAdReceivedReward;
 
-    public event Action<MaxSdkBase.AdInfo> OnAdRevenuePaid;
+    public event Action<ImpressionData> AdRevenuePaid;
 
     int interstitialRetryAttempt;
     int rewardedRetryAttempt;
+    float bannerHeight = -1;
+
+    public float BannerHeight
+    {
+        get
+        {
+            if (bannerHeight < 0)
+            {
+                CalculateBannerHeight();
+            }
+
+            return bannerHeight;
+        }
+    }
 
     public void Initialize()
     {
         MaxSdkCallbacks.OnSdkInitializedEvent += (configuration) =>
         {
             // AppLovin SDK is initialized, start loading ads
-            InitializeInterstitialAds();
+            InitializeInterstitialAd();
             InitializeRewardedAd();
             InitializeBannerAd();
             //InitializeMRecAds();
@@ -61,7 +76,7 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
                 MaxSdk.ShowMediationDebugger();
             }
 
-            OnInitialized?.Invoke();
+            Initialized?.Invoke();
         };
 
         MaxSdk.SetSdkKey(Key);
@@ -85,7 +100,7 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
     }
 
     #region INTERSTITIAL ADS
-    public void InitializeInterstitialAds()
+    public void InitializeInterstitialAd()
     {
         // Attach callback
         MaxSdkCallbacks.Interstitial.OnAdLoadedEvent += OnInterstitialLoadedEvent;
@@ -103,7 +118,7 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
     void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
         interstitialRetryAttempt = 0;
-        OnInterstitialAdLoaded?.Invoke();
+        InterstitialAdLoaded?.Invoke();
     }
 
     void OnInterstitialLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
@@ -115,18 +130,18 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
 
     void OnInterstitialDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        OnInterstitialAdDisplayed?.Invoke();
+        InterstitialAdDisplayed?.Invoke();
     }
 
     void OnInterstitialAdFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
     {
         LoadInterstitial();
-        OnInterstitialAdFailedToDisplay?.Invoke();
+        InterstitialAdFailedToDisplay?.Invoke();
     }
 
     void OnInterstitialClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        OnInterstitialAdClicked?.Invoke();
+        InterstitialAdClicked?.Invoke();
     }
 
     void OnInterstitialHiddenEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -136,7 +151,7 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
 
     void OnInterstitialRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        OnAdRevenuePaid?.Invoke(adInfo);
+        OnAdRevenuePaid(adInfo);
     }
 
     public bool IsInterstitialReady() => MaxSdk.IsInterstitialReady(InterstitialAdUnitId);
@@ -164,7 +179,7 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
     void OnRewardedAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
         rewardedRetryAttempt = 0;
-        OnRewardedAdLoaded?.Invoke();
+        RewardedAdLoaded?.Invoke();
     }
 
     void OnRewardedAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
@@ -176,13 +191,13 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
 
     void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        OnRewardedAdDisplayed?.Invoke();
+        RewardedAdDisplayed?.Invoke();
     }
 
     void OnRewardedAdFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
     {
         LoadRewardedAd();
-        OnRewardedAdFailedToDisplay?.Invoke(errorInfo);
+        RewardedAdFailedToDisplay?.Invoke(errorInfo.Message);
     }
 
     void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
@@ -190,17 +205,17 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
     void OnRewardedAdHiddenEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
         LoadRewardedAd();
-        OnRewardedAdHidden?.Invoke();
+        RewardedAdHidden?.Invoke();
     }
 
     void OnRewardedAdReceivedRewardEvent(string adUnitId, MaxSdk.Reward reward, MaxSdkBase.AdInfo adInfo)
     {
-        OnRewardedAdReceivedReward?.Invoke();
+        RewardedAdReceivedReward?.Invoke();
     }
 
     void OnRewardedAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        OnAdRevenuePaid?.Invoke(adInfo);
+        OnAdRevenuePaid(adInfo);
     }
 
     public bool IsRewardedAdReady() => MaxSdk.IsRewardedAdReady(RewardedAdUnitId);
@@ -229,6 +244,8 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
         MaxSdkCallbacks.Banner.OnAdExpandedEvent += OnBannerAdExpandedEvent;
         MaxSdkCallbacks.Banner.OnAdCollapsedEvent += OnBannerAdCollapsedEvent;
         MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += OnBannerAdRevenuePaidEvent;
+
+        CalculateBannerHeight();
     }
 
     void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
@@ -239,12 +256,35 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
 
     void OnBannerAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        // Rewarded ad revenue paid. Use this callback to track user revenue.
-        OnAdRevenuePaid?.Invoke(adInfo);
+        OnAdRevenuePaid(adInfo);
     }
 
     public void ShowBanner() => MaxSdk.ShowBanner(BannerAdUnitId);
     public void HideBanner() => MaxSdk.HideBanner(BannerAdUnitId);
+
+    void CalculateBannerHeight()
+    {
+        if (Application.isEditor)
+        {
+            bannerHeight = 50f;
+        }
+        else if (isAdaptiveBanner)
+        {
+            bannerHeight = MaxSdkUtils.GetAdaptiveBannerHeight();
+        }
+        else if (MaxSdkUtils.IsTablet())
+        {
+            bannerHeight = 90f;
+        }
+        else
+        {
+            bannerHeight = 50f;
+        }
+
+        float density = MaxSdkUtils.GetScreenDensity();
+
+        bannerHeight *= density;
+    }
     #endregion
 
     #region MREC AD
@@ -269,11 +309,26 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
 
     public void OnMRecAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        // Interstitial ad revenue paid. Use this callback to track user revenue.
-        OnAdRevenuePaid?.Invoke(adInfo);
+        OnAdRevenuePaid(adInfo);
     }
 
     public void ShowMRec() => MaxSdk.ShowMRec(MrecAdUnitId);
     public void HideMRec() => MaxSdk.HideMRec(MrecAdUnitId);
     #endregion
+
+    void OnAdRevenuePaid(MaxSdkBase.AdInfo adInfo)
+    {
+        var data = new ImpressionData(
+            "applovin_max",
+            adInfo.AdFormat,
+            MaxSdk.GetSdkConfiguration().CountryCode,
+            adInfo.AdUnitIdentifier,
+            adInfo.NetworkName,
+            adInfo.Placement,
+            "USD",
+            adInfo.Revenue);
+
+        AdRevenuePaid?.Invoke(data);
+    }
+#endif
 }

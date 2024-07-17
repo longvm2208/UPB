@@ -1,102 +1,112 @@
-﻿//#define APPLOVIN_MAX
-#define IRON_SOURCE
-
-using AppsFlyerSDK;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AdManager : SingletonMonoBehaviour<AdManager>
 {
+#if UNITY_EDITOR
+    [SerializeField, ExposedScriptableObject]
+    MediationConfig mediationConfig;
+#endif
     [SerializeField] float interstitialTimeCounter = -1f;
-    [SerializeField] float rewardTimeCounter = -1f; 
+    [SerializeField] float rewardTimeCounter = -1f;
+    [SerializeField] Canvas canvas;
     [SerializeField] GameObject blocker;
     [SerializeField] GameObject adNotLoadedYet;
 
-    event Action onInterstitialAdLoaded;
-    event Action onInterstitialAdDisplayed;
-    event Action onInterstitialAdFailedToDisplay;
-    event Action onInterstitialAdClicked;
+    event Action interstitialAdLoaded;
+    event Action interstitialAdDisplayed;
+    event Action interstitialAdFailedToDisplay;
+    event Action interstitialAdClicked;
 
-    event Action onRewardedAdDisplayed;
-#if APPLOVIN_MAX
-    event Action<MaxSdkBase.ErrorInfo> onRewardedAdFailedToDisplay;
-#elif IRON_SOURCE
-    event Action<IronSourceError> onRewardedAdShowFailed;
-#endif
-    event Action onRewardedAdHidden;
-    event Action onRewardedAdReceivedReward;
+    event Action rewardedAdDisplayed;
+    event Action<string> rewardedAdFailedToDisplay;
+    event Action rewardedAdHidden;
+    event Action rewardedAdReceivedReward;
 
-    GameData gameData => DataManager.Instance.GameData;
+    float bannerHeight = -1f;
+
+    public float BannerHeight
+    {
+        get
+        {
+            if (bannerHeight < 0f)
+            {
+                CalculateBannerHeight();
+            }
+
+            return bannerHeight;
+        }
+    }
 
     void Start()
     {
 #if APPLOVIN_MAX
-        MaxManager.Instance.OnInitialized += OnInitialized;
+        MaxManager.Instance.Initialized += OnInitialized;
 
-        MaxManager.Instance.OnInterstitialAdLoaded += InterstitialAdLoaded;
-        MaxManager.Instance.OnInterstitialAdDisplayed += InterstitialAdDisplayed;
-        MaxManager.Instance.OnInterstitialAdFailedToDisplay += InterstitialAdFailedToDisplay;
-        MaxManager.Instance.OnInterstitialAdClicked += InterstitialAdClicked;
+        MaxManager.Instance.InterstitialAdLoaded += OnInterstitialAdLoaded;
+        MaxManager.Instance.InterstitialAdDisplayed += OnInterstitialAdDisplayed;
+        MaxManager.Instance.InterstitialAdFailedToDisplay += OnInterstitialAdFailedToDisplay;
+        MaxManager.Instance.InterstitialAdClicked += OnInterstitialAdClicked;
 
-        MaxManager.Instance.OnRewardedAdLoaded += RewardedAdLoaded;
-        MaxManager.Instance.OnRewardedAdDisplayed += RewardedAdDisplayed;
-        MaxManager.Instance.OnRewardedAdFailedToDisplay += RewardedAdFailedToDisplay;
-        MaxManager.Instance.OnRewardedAdHidden += RewardedAdHidden;
-        MaxManager.Instance.OnRewardedAdReceivedReward += RewardedAdReceivedReward;
+        MaxManager.Instance.RewardedAdLoaded += OnRewardedAdLoaded;
+        MaxManager.Instance.RewardedAdDisplayed += OnRewardedAdDisplayed;
+        MaxManager.Instance.RewardedAdFailedToDisplay += OnRewardedAdFailedToDisplay;
+        MaxManager.Instance.RewardedAdHidden += OnRewardedAdHidden;
+        MaxManager.Instance.RewardedAdReceivedReward += OnRewardedAdReceivedReward;
 
-        MaxManager.Instance.OnAdRevenuePaid += OnAdRevenuePaid;
+        MaxManager.Instance.AdRevenuePaid += OnAdRevenuePaid;
 #elif IRON_SOURCE
-        IronSourceManager.Instance.OnInitialized += OnInitialized;
+        IronSourceManager.Instance.Initialized += OnInitialized;
 
-        IronSourceManager.Instance.OnInterstitialAdLoaded += InterstitialAdLoaded;
-        IronSourceManager.Instance.OnInterstitialAdOpened += InterstitialAdDisplayed;
-        IronSourceManager.Instance.OnInterstitialAdShowFailed += InterstitialAdFailedToDisplay;
-        IronSourceManager.Instance.OnInterstitialAdClicked += InterstitialAdClicked;
+        IronSourceManager.Instance.InterstitialAdLoaded += OnInterstitialAdLoaded;
+        IronSourceManager.Instance.InterstitialAdOpened += OnInterstitialAdDisplayed;
+        IronSourceManager.Instance.InterstitialAdShowFailed += OnInterstitialAdFailedToDisplay;
+        IronSourceManager.Instance.InterstitialAdClicked += OnInterstitialAdClicked;
 
-        IronSourceManager.Instance.OnRewardedAdAvailable += RewardedAdLoaded;
-        IronSourceManager.Instance.OnRewardedAdOpened += RewardedAdDisplayed;
-        IronSourceManager.Instance.OnRewardedAdShowFailed += RewardedAdShowFailed; ;
-        IronSourceManager.Instance.OnRewardedAdClosed += RewardedAdHidden;
-        IronSourceManager.Instance.OnRewardedAdReceivedReward += RewardedAdReceivedReward;
+        IronSourceManager.Instance.RewardedAdAvailable += OnRewardedAdLoaded;
+        IronSourceManager.Instance.RewardedAdOpened += OnRewardedAdDisplayed;
+        IronSourceManager.Instance.RewardedAdShowFailed += OnRewardedAdFailedToDisplay;
+        IronSourceManager.Instance.RewardedAdClosed += OnRewardedAdHidden;
+        IronSourceManager.Instance.RewardedAdReceivedReward += OnRewardedAdReceivedReward;
 
-        IronSourceManager.Instance.OnImpressionDataReady += ImpressionDataReady;
+        IronSourceManager.Instance.ImpressionDataReady += OnAdRevenuePaid;
 #endif
     }
 
     void OnDestroy()
     {
 #if APPLOVIN_MAX
-        MaxManager.Instance.OnInitialized -= OnInitialized;
+        MaxManager.Instance.Initialized -= OnInitialized;
 
-        MaxManager.Instance.OnInterstitialAdLoaded -= InterstitialAdLoaded;
-        MaxManager.Instance.OnInterstitialAdDisplayed -= InterstitialAdDisplayed;
-        MaxManager.Instance.OnInterstitialAdFailedToDisplay -= InterstitialAdFailedToDisplay;
-        MaxManager.Instance.OnInterstitialAdClicked -= InterstitialAdClicked;
+        MaxManager.Instance.InterstitialAdLoaded -= OnInterstitialAdLoaded;
+        MaxManager.Instance.InterstitialAdDisplayed -= OnInterstitialAdDisplayed;
+        MaxManager.Instance.InterstitialAdFailedToDisplay -= OnInterstitialAdFailedToDisplay;
+        MaxManager.Instance.InterstitialAdClicked -= OnInterstitialAdClicked;
 
-        MaxManager.Instance.OnRewardedAdLoaded -= RewardedAdLoaded;
-        MaxManager.Instance.OnRewardedAdDisplayed -= RewardedAdDisplayed;
-        MaxManager.Instance.OnRewardedAdFailedToDisplay -= RewardedAdFailedToDisplay;
-        MaxManager.Instance.OnRewardedAdHidden -= RewardedAdHidden;
-        MaxManager.Instance.OnRewardedAdReceivedReward -= RewardedAdReceivedReward;
+        MaxManager.Instance.RewardedAdLoaded -= OnRewardedAdLoaded;
+        MaxManager.Instance.RewardedAdDisplayed -= OnRewardedAdDisplayed;
+        MaxManager.Instance.RewardedAdFailedToDisplay -= OnRewardedAdFailedToDisplay;
+        MaxManager.Instance.RewardedAdHidden -= OnRewardedAdHidden;
+        MaxManager.Instance.RewardedAdReceivedReward -= OnRewardedAdReceivedReward;
 
-        MaxManager.Instance.OnAdRevenuePaid -= OnAdRevenuePaid;
+        MaxManager.Instance.AdRevenuePaid -= OnAdRevenuePaid;
 #elif IRON_SOURCE
-        IronSourceManager.Instance.OnInitialized -= OnInitialized;
+        IronSourceManager.Instance.Initialized -= OnInitialized;
 
-        IronSourceManager.Instance.OnInterstitialAdLoaded -= InterstitialAdLoaded;
-        IronSourceManager.Instance.OnInterstitialAdOpened -= InterstitialAdDisplayed;
-        IronSourceManager.Instance.OnInterstitialAdShowFailed -= InterstitialAdFailedToDisplay;
-        IronSourceManager.Instance.OnInterstitialAdClicked -= InterstitialAdClicked;
+        IronSourceManager.Instance.InterstitialAdLoaded -= OnInterstitialAdLoaded;
+        IronSourceManager.Instance.InterstitialAdOpened -= OnInterstitialAdDisplayed;
+        IronSourceManager.Instance.InterstitialAdShowFailed -= OnInterstitialAdFailedToDisplay;
+        IronSourceManager.Instance.InterstitialAdClicked -= OnInterstitialAdClicked;
 
-        IronSourceManager.Instance.OnRewardedAdAvailable -= RewardedAdLoaded;
-        IronSourceManager.Instance.OnRewardedAdOpened -= RewardedAdDisplayed;
-        IronSourceManager.Instance.OnRewardedAdShowFailed -= RewardedAdShowFailed; ;
-        IronSourceManager.Instance.OnRewardedAdClosed -= RewardedAdHidden;
-        IronSourceManager.Instance.OnRewardedAdReceivedReward -= RewardedAdReceivedReward;
+        IronSourceManager.Instance.RewardedAdAvailable -= OnRewardedAdLoaded;
+        IronSourceManager.Instance.RewardedAdOpened -= OnRewardedAdDisplayed;
+        IronSourceManager.Instance.RewardedAdShowFailed -= OnRewardedAdFailedToDisplay;
+        IronSourceManager.Instance.RewardedAdClosed -= OnRewardedAdHidden;
+        IronSourceManager.Instance.RewardedAdReceivedReward -= OnRewardedAdReceivedReward;
 
-        IronSourceManager.Instance.OnImpressionDataReady -= ImpressionDataReady;
+        IronSourceManager.Instance.ImpressionDataReady -= OnAdRevenuePaid;
 #endif
     }
 
@@ -106,12 +116,15 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
         {
             interstitialTimeCounter -= Time.deltaTime;
         }
+
+        if (rewardTimeCounter > 0)
+        {
+            rewardTimeCounter -= Time.deltaTime;
+        }
     }
 
     public void Initialize()
     {
-        Debug.Log("AdManager - Initialize");
-
         StartCoroutine(Routine());
 
         IEnumerator Routine()
@@ -124,92 +137,14 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
             IronSourceManager.Instance.Initialize();
 #endif
         }
+
+        CalculateBannerHeight();
     }
 
     void OnInitialized()
     {
         StartCoroutine(ShowBannerRoutine());
     }
-
-#if APPLOVIN_MAX
-    void OnAdRevenuePaid(MaxSdkBase.AdInfo adInfo)
-    {
-        var data = new ImpressionData(
-            "applovin_max",
-            adInfo.AdFormat,
-            MaxSdk.GetSdkConfiguration().CountryCode,
-            adInfo.AdUnitIdentifier,
-            adInfo.NetworkName,
-            adInfo.Placement,
-            adInfo.Revenue);
-
-        Debug.Log(data.ToString());
-
-        FirebaseManager.Instance.LogAdRevenuePaid(data);
-
-        AppsFlyerAdRevenue.logAdRevenue("applovin_max",
-            AppsFlyerAdRevenueMediationNetworkType.
-            AppsFlyerAdRevenueMediationNetworkTypeApplovinMax,
-            data.revenue, "USD", data.ToDictionary());
-    }
-#elif IRON_SOURCE
-    void ImpressionDataReady(IronSourceImpressionData data)
-    {
-        try
-        {
-            var revenue = data.revenue.Value;
-
-            Dictionary<string, string> additionalParameters = new Dictionary<string, string>
-            {
-                { "ad_platform", "ironsource" },
-                { "ad_source", data.adNetwork },
-                { "ad_unit_name", data.adUnit },
-                { "placement", data.placement },
-                { "currency", "USD" },
-                { "country_code", data.country }
-            };
-
-            try
-            {
-                additionalParameters.Add("precision", data.precision);
-                additionalParameters.Add("auction_id", data.auctionId);
-                additionalParameters.Add("encrypted_cpm", data.encryptedCPM);
-                additionalParameters.Add("value", revenue.ToString());
-
-                if (data.conversionValue.HasValue)
-                {
-                    additionalParameters.Add("conversion_value", data.conversionValue.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogException(ex);
-            }
-
-            //AppsFlyerAdRevenue.logAdRevenue(data.adNetwork
-            //    , AppsFlyerAdRevenueMediationNetworkType.AppsFlyerAdRevenueMediationNetworkTypeIronSource,
-            //    data.revenue.Value,
-            //    "USD", additionalParameters);
-
-            Firebase.Analytics.Parameter[] AdParameters = {
-                new Firebase.Analytics.Parameter("ad_platform", "ironSource"),
-                new Firebase.Analytics.Parameter("ad_source", data.adNetwork),
-                new Firebase.Analytics.Parameter("ad_unit_name", data.adUnit),
-                new Firebase.Analytics.Parameter("ad_format", data.instanceName),
-                new Firebase.Analytics.Parameter("currency","USD"),
-                new Firebase.Analytics.Parameter("value", data.revenue.Value)
-            };
-
-            //FirebaseManager.Instance.LogEvent("ad_impression", AdParameters);
-            //FirebaseManager.Instance.LogEvent("ad_impression_abi", AdParameters);
-            //FirebaseManager.Instance.LogEvent("ad_impression_IS", AdParameters);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogException(ex);
-        }
-    }
-#endif
 
     IEnumerator ShowBannerRoutine()
     {
@@ -221,13 +156,11 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
         ShowBanner();
     }
 
-    void AdNotLoadedYetNotify()
-    {
-        adNotLoadedYet.gameObject.SetActive(false);
-        adNotLoadedYet.gameObject.SetActive(true);
-    }
+    void NotifyAdNotLoadedYet() => adNotLoadedYet.gameObject.SetActive(true);
+    void EnableBlocker() => blocker.SetActive(true);
+    void DisableBlocker() => blocker.SetActive(false);
 
-    #region CONSENT FORM
+    #region PRIVACY OPTIONS FORM
     public void ShowPrivacyOptionsForm()
     {
         AdMobManager.Instance.ShowPrivacyOptionsForm();
@@ -240,28 +173,28 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
     #endregion
 
     #region INTERSTITIAL AD
-    void InterstitialAdLoaded()
+    void OnInterstitialAdLoaded()
     {
-        //AppsflyerEventRegister.af_interstitial_ad_api_called();
-        onInterstitialAdLoaded?.Invoke();
+        AppsFlyerManager.Instance.SendInterstitialAdApiCalled();
+        interstitialAdLoaded?.Invoke();
     }
 
-    void InterstitialAdDisplayed()
+    void OnInterstitialAdDisplayed()
     {
-        //AppsflyerEventRegister.af_interstitial_ad_displayed();
-        blocker.SetActive(false);
-        onInterstitialAdDisplayed?.Invoke();
+        AppsFlyerManager.Instance.SendInterstitialAdDisplayed();
+        DisableBlocker();
+        interstitialAdDisplayed?.Invoke();
     }
 
-    void InterstitialAdFailedToDisplay()
+    void OnInterstitialAdFailedToDisplay()
     {
-        blocker.SetActive(false);
-        onInterstitialAdFailedToDisplay?.Invoke();
+        DisableBlocker();
+        interstitialAdFailedToDisplay?.Invoke();
     }
 
-    void InterstitialAdClicked()
+    void OnInterstitialAdClicked()
     {
-        onInterstitialAdClicked?.Invoke();
+        interstitialAdClicked?.Invoke();
     }
 
     void LoadInterstitial()
@@ -279,6 +212,8 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
         return MaxManager.Instance.IsInterstitialReady();
 #elif IRON_SOURCE
         return IronSourceManager.Instance.IsInterstitialReady();
+#else
+        return false;
 #endif
     }
 
@@ -293,35 +228,35 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
 
     bool CanShowInterstitial()
     {
-        return ConfigManager.Instance.IsEnableAds && !gameData.IsRemoveAds && interstitialTimeCounter <= 0;
+        return GameSettings.Instance.IsEnableAds && !GameData.Instance.IsRemoveAds && interstitialTimeCounter <= 0 && rewardTimeCounter <= 0;
     }
 
     void SetupShowInterstitial(string placement, Action onFinished)
     {
-        //AppsflyerEventRegister.af_interstitial_ad_eligible();
+        AppsFlyerManager.Instance.SendInterstitialAdEligible();
         interstitialTimeCounter = ConfigManager.Instance.InterstitialAdCapping;
-        blocker.SetActive(true);
+        EnableBlocker();
 
-        onInterstitialAdDisplayed = () =>
+        interstitialAdDisplayed = () =>
         {
-            //FirebaseManager.Instance.ad_inter_show(placement);
+            FirebaseManager.Instance.LogInterstitialAdShow(placement);
             onFinished?.Invoke();
         };
 
-        onInterstitialAdFailedToDisplay = () =>
+        interstitialAdFailedToDisplay = () =>
         {
-            //FirebaseManager.Instance.ad_inter_fail(placement);
+            FirebaseManager.Instance.LogInterstitialAdFailed(placement);
             onFinished?.Invoke();
         };
 
-        onInterstitialAdLoaded = () =>
+        interstitialAdLoaded = () =>
         {
-            //FirebaseManager.Instance.ad_inter_load(placement);
+            FirebaseManager.Instance.LogInterstitialAdLoad(placement);
         };
 
-        onInterstitialAdClicked = () =>
+        interstitialAdClicked = () =>
         {
-            //FirebaseManager.Instance.ad_inter_click(placement);
+            FirebaseManager.Instance.LogInterstitialAdClick(placement);
         };
     }
 
@@ -333,10 +268,10 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
         }
         else
         {
-            Debug.Log("Interstitial ad not ready");
+            Debug.LogWarning("Interstitial ad not ready");
 
             LoadInterstitial();
-            blocker.SetActive(false);
+            DisableBlocker();
             onFinished?.Invoke();
         }
     }
@@ -362,48 +297,39 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
         }
 
         SetupShowInterstitial(placement, onFinished);
-
         ScheduleUtils.DelayTask(1f, () => CheckAndShowInterstitial(onFinished));
     }
     #endregion
 
     #region REWARDED AD
-    void RewardedAdLoaded()
+    void OnRewardedAdLoaded()
     {
-        //AppsflyerEventRegister.af_rewarded_ad_api_called();
+        AppsFlyerManager.Instance.SendRewardedAdApiCalled();
     }
 
-    void RewardedAdDisplayed()
+    void OnRewardedAdDisplayed()
     {
-        //AppsflyerEventRegister.af_rewarded_ad_displayed();
-        onRewardedAdDisplayed?.Invoke();
+        AppsFlyerManager.Instance.SendRewardedAdDisplayed();
+        rewardedAdDisplayed?.Invoke();
     }
 
-#if APPLOVIN_MAX
-    void RewardedAdFailedToDisplay(MaxSdkBase.ErrorInfo info)
+    void OnRewardedAdFailedToDisplay(string error)
     {
-        blocker.SetActive(false);
-        onRewardedAdFailedToDisplay?.Invoke(info);
-    }
-#elif IRON_SOURCE
-    void RewardedAdShowFailed(IronSourceError error)
-    {
-        blocker.SetActive(false);
-        onRewardedAdShowFailed?.Invoke(error);
-    }
-#endif
-
-    void RewardedAdHidden()
-    {
-        blocker.SetActive(false);
-        onRewardedAdHidden?.Invoke();
+        DisableBlocker();
+        rewardedAdFailedToDisplay?.Invoke(error);
     }
 
-    void RewardedAdReceivedReward()
+    void OnRewardedAdHidden()
     {
-        //AppsflyerEventRegister.af_rewarded_ad_completed();
-        blocker.SetActive(false);
-        onRewardedAdReceivedReward?.Invoke();
+        DisableBlocker();
+        rewardedAdHidden?.Invoke();
+    }
+
+    void OnRewardedAdReceivedReward()
+    {
+        AppsFlyerManager.Instance.SendRewardedAdComplete();
+        DisableBlocker();
+        rewardedAdReceivedReward?.Invoke();
     }
 
     void LoadRewardedAd()
@@ -421,6 +347,8 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
         return MaxManager.Instance.IsRewardedAdReady();
 #elif IRON_SOURCE
         return IronSourceManager.Instance.IsRewardedVideoAvailable();
+#else
+        return false;
 #endif
     }
 
@@ -435,46 +363,38 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
 
     public void ShowRewardedAd(string placement, string buttonName, Action onReceivedReward = null, Action onFailed = null)
     {
-        if (!ConfigManager.Instance.IsEnableAds)
+        if (!GameSettings.Instance.IsEnableAds)
         {
             onReceivedReward?.Invoke();
             return;
         }
 
-        //AppsflyerEventRegister.af_rewarded_ad_eligible();
-        //FirebaseManager.Instance.ads_reward_click(placement, buttonName);
-        interstitialTimeCounter = ConfigManager.Instance.InterstitialAdCapping;
-        blocker.SetActive(true);
+        AppsFlyerManager.Instance.SendRewardedAdEligible();
+        FirebaseManager.Instance.LogRewardedAdClick(placement, buttonName);
+        rewardTimeCounter = ConfigManager.Instance.RewardedAdCapping;
+        EnableBlocker();
 
-        onRewardedAdDisplayed = () =>
+        rewardedAdDisplayed = () =>
         {
-            //FirebaseManager.Instance.ads_reward_show(placement, buttonName);
+            FirebaseManager.Instance.LogRewardedAdShow(placement, buttonName);
         };
 
-        onRewardedAdReceivedReward = () =>
+        rewardedAdReceivedReward = () =>
         {
-            //FirebaseManager.Instance.ads_reward_complete(placement, buttonName);
+            FirebaseManager.Instance.LogRewardedAdComplete(placement, buttonName);
             onReceivedReward?.Invoke();
         };
 
-        onRewardedAdHidden = () =>
+        rewardedAdHidden = () =>
         {
             onFailed?.Invoke();
         };
 
-#if APPLOVIN_MAX
-        onRewardedAdFailedToDisplay = (errorInfo) =>
+        rewardedAdFailedToDisplay = (errorInfo) =>
         {
-            FirebaseManager.Instance.ads_reward_fail(placement, buttonName);
+            FirebaseManager.Instance.LogRewardedAdFailed(placement, buttonName);
             onFailed?.Invoke();
         };
-#elif IRON_SOURCE
-        onRewardedAdShowFailed = (error) =>
-        {
-            //FirebaseManager.Instance.ads_reward_fail(placement, buttonName);
-            onFailed?.Invoke();
-        };
-#endif
 
         if (IsRewardedAdReady())
         {
@@ -485,8 +405,8 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
             Debug.LogWarning("Rewarded ad not ready");
 
             LoadRewardedAd();
-            blocker.SetActive(false);
-            AdNotLoadedYetNotify();
+            DisableBlocker();
+            NotifyAdNotLoadedYet();
             onFailed?.Invoke();
         }
     }
@@ -495,10 +415,7 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
     #region BANNER AD
     public void ShowBanner()
     {
-        if (!ConfigManager.Instance.IsEnableAds || gameData.IsRemoveAds)
-        {
-            return;
-        }
+        if (!GameSettings.Instance.IsEnableAds || GameData.Instance.IsRemoveAds) return;
 
 #if APPLOVIN_MAX
         MaxManager.Instance.ShowBanner();
@@ -514,6 +431,23 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
 #elif IRON_SOURCE
         IronSourceManager.Instance.DestroyBanner();
 #endif
+    }
+
+    void CalculateBannerHeight()
+    {
+#if APPLOVIN_MAX
+        bannerHeight = MaxManager.Instance.BannerHeight;
+#elif IRON_SOURCE
+        bannerHeight = IronSourceManager.Instance.BannerHeight;
+#endif
+    }
+    #endregion
+
+    #region REVENUE
+    void OnAdRevenuePaid(ImpressionData data)
+    {
+        FirebaseManager.Instance.LogAdRevenue(data);
+        AppsFlyerManager.Instance.LogAdRevenue(data.Revenue, data.ToDictionary());
     }
     #endregion
 }

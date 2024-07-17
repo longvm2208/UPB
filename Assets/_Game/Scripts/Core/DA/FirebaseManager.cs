@@ -1,9 +1,10 @@
-using Firebase;
+﻿using Firebase;
 using Firebase.Analytics;
 using Firebase.Extensions;
 using Firebase.RemoteConfig;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -13,6 +14,12 @@ public class FirebaseManager : Singleton<FirebaseManager>
     {
         public string name;
         public Parameter[] parameters;
+
+        public CachedEvent(string name)
+        {
+            this.name = name;
+            parameters = null;
+        }
 
         public CachedEvent(string name, Parameter[] parameters)
         {
@@ -91,7 +98,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     private void ApplyRemoteConfigData()
     {
-        if (Application.isEditor) return;
 
     }
     #endregion
@@ -100,11 +106,26 @@ public class FirebaseManager : Singleton<FirebaseManager>
     private void SetUserProperty(string property, string value)
     {
         if (Debug.isDebugBuild || Application.isEditor) return;
+
         FirebaseAnalytics.SetUserProperty(property, value);
     }
     #endregion
 
     #region LOG EVENT
+    private void LogEvent(string name)
+    {
+        if (Debug.isDebugBuild || Application.isEditor) return;
+
+        if (!isReady)
+        {
+            cachedEvents.Enqueue(new CachedEvent(name));
+        }
+        else
+        {
+            FirebaseAnalytics.LogEvent(name);
+        }
+    }
+
     private void LogEvent(string name, params Parameter[] parameters)
     {
         if (Debug.isDebugBuild || Application.isEditor) return;
@@ -119,10 +140,17 @@ public class FirebaseManager : Singleton<FirebaseManager>
         }
     }
 
-    private void LogEvent(string name)
+    public void LogEvent(string name, params DebugParameter[] consoleParameters)
     {
-        if (Debug.isDebugBuild || Application.isEditor || !isReady) return;
-        FirebaseAnalytics.LogEvent(name);
+        StringBuilder builder = new StringBuilder();
+        builder.AppendFormat("[Firebase] [{0}] ", name);
+
+        for (int i = 0; i < consoleParameters.Length; i++)
+        {
+            builder.AppendFormat("[{0}-{1}] ", consoleParameters[i].Name, consoleParameters[i].Value);
+        }
+
+        LogUtils.Log(Color.green, builder.ToString());
     }
 
     #region CACHED EVENT
@@ -139,28 +167,85 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     private void LogCachedEvent(CachedEvent cachedEvent)
     {
-        LogEvent(cachedEvent.name, cachedEvent.parameters);
+        if (cachedEvent.parameters != null)
+        {
+            LogEvent(cachedEvent.name, cachedEvent.parameters);
+        }
+        else
+        {
+            LogEvent(cachedEvent.name);
+        }
     }
     #endregion
 
-    #region ADS EVENT
-    public void LogAdRevenuePaid(ImpressionData data)
+    #region AD EVENT
+    public void LogInterstitialAdLoad(string placement)
     {
-        LogEvent("ad_impression", data.ToParameters());
+        LogEvent("ad_inter_load", new Parameter("placement", placement));
     }
 
-    public void LogRewardedAdSuccess(string placement)
+    public void LogInterstitialAdFailed(string placement)
     {
-        LogEvent("rewarded_ad_success",
-            new Parameter("placement", placement));
+        LogEvent("ad_inter_fail", new Parameter("placement", placement));
+    }
+
+    public void LogInterstitialAdShow(string placement)
+    {
+        LogEvent("ad_inter_show", new Parameter("placement", placement));
+    }
+
+    public void LogInterstitialAdClick(string placement)
+    {
+        LogEvent("ad_inter_click", new Parameter("placement", placement));
+    }
+
+    public void LogRewardedAdOffer(string placement, string buttonName)
+    {
+        LogEvent("ads_reward_offer",
+            new Parameter("placement", placement),
+            new Parameter("button_name", buttonName));
+    }
+
+    public void LogRewardedAdFailed(string placement, string buttonName)
+    {
+        LogEvent("ads_reward_fail",
+            new Parameter("placement", placement),
+            new Parameter("button_name", buttonName));
+    }
+
+    public void LogRewardedAdShow(string placement, string buttonName)
+    {
+        LogEvent("ads_reward_show",
+            new Parameter("placement", placement),
+            new Parameter("button_name", buttonName));
+    }
+
+    public void LogRewardedAdClick(string placement, string buttonName)
+    {
+        LogEvent("ads_reward_click",
+            new Parameter("placement", placement),
+            new Parameter("button_name", buttonName));
+    }
+
+    public void LogRewardedAdComplete(string placement, string buttonName)
+    {
+        LogEvent("ads_reward_complete",
+            new Parameter("placement", placement),
+            new Parameter("button_name", buttonName));
+    }
+
+    public void LogAdRevenue(ImpressionData data)
+    {
+        LogEvent("ad_impression", data.ToParameters());
     }
     #endregion
 
     #region IAP EVENT
-    public void LogIAPPurchased(string id)
+    public void LogIapPurchase(string packId, string location)
     {
-        LogEvent("iap_purchased",
-            new Parameter("id", id));
+        LogEvent("iapPurchased_confirmed",
+            new Parameter("pack_ID", packId),
+            new Parameter("location", location));
     }
     #endregion
     #endregion

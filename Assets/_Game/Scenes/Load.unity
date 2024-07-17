@@ -606,8 +606,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d171fe400f0a6b2489538fd4022267e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsInternetTime: 1
-  IsEnableAds: 1
   InterstitialAdCapping: 40
   RewardedAdCapping: 40
 --- !u!1 &940194993
@@ -654,6 +652,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50965c9d37e56444db8c44c2eac7ef47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAutoSaveOnLoad: 0
+  autoSaveInterval: 5
   gameData:
     IsSoundEnabled: 1
     IsMusicEnabled: 1
@@ -1092,6 +1092,7 @@ GameObject:
   - component: {fileID: 1172801635}
   - component: {fileID: 1172801636}
   - component: {fileID: 1172801637}
+  - component: {fileID: 1172801638}
   m_Layer: 0
   m_Name: Ads Manager
   m_TagString: Untagged
@@ -1126,9 +1127,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c4cb3108c896f48b6f671b01b1b7da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardedAdCount: 0
-  interstitialCount: 0
+  mediationConfig: {fileID: 11400000, guid: 98ea39ddd0b843c4fbd3606111867978, type: 2}
   interstitialTimeCounter: -1
+  rewardTimeCounter: -1
+  canvas: {fileID: 1893950472}
   blocker: {fileID: 381061649}
   adNotLoadedYet: {fileID: 1348507002}
 --- !u!114 &1172801636
@@ -1158,8 +1160,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1418511b848e803409173d04ba9d5051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableTestSuite: 0
-  isRewardedVideoManualAPI: 1
+--- !u!114 &1172801638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172801633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 094170b94f899b0428ee3e9252ed8cd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkConsentStatusOnStart: 0
 --- !u!1 &1348507002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1770,6 +1783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc7e1f152a3725f4c828486345140433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameSettings: {fileID: 11400000, guid: f36a5916f1c2dc541b967f1952f72808, type: 2}
 --- !u!1 &2134597685
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class IAPButtonPurchase : MonoBehaviour
 {
-    [SerializeField, ValueDropdown("ids")] private string id;
-    [SerializeField] private TMP_Text priceTmp;
+    [SerializeField, ValueDropdown("ids")] string id;
+    [SerializeField] IAPLocation location;
+    [SerializeField] TMP_Text priceTmp;
 
-    private static string[] ids = IAPProductId.Ids;
+    static string[] ids = IAPProductId.Ids;
 
-    private IEnumerator Start()
+    IEnumerator Start()
     {
         yield return new WaitUntil(() => IAPManager.Instance.IsInitialized);
 
@@ -20,7 +21,7 @@ public class IAPButtonPurchase : MonoBehaviour
     #region UI Events
     public void OnClick()
     {
-        IAPManager.Instance.OnPurchaseClicked(id);
+        IAPManager.Instance.OnPurchaseClicked(id, location);
     }
     #endregion
 }

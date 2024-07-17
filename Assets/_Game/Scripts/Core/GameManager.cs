@@ -1,15 +1,23 @@
+using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    private const int TargetFps = 60;
+    const int TargetFps = 60;
 
-    private DateTime startupTime;
+#if UNITY_EDITOR
+    [SerializeField] bool isInternetAvailable = true;
+#endif
+    [SerializeField, ExposedScriptableObject]
+    GameSettings gameSettings;
+
+    DateTime startupTime;
 
     public DateTime Now => startupTime + TimeSpan.FromSeconds(Time.realtimeSinceStartup);
+    public GameSettings GameSettings => gameSettings;
 
-    private void Awake()
+    void Awake()
     {
         Application.targetFrameRate = TargetFps;
         startupTime = DateTime.Now;
@@ -23,7 +31,11 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     #region INTERNET
     public bool IsInternetAvailable()
     {
+#if UNITY_EDITOR
+        return isInternetAvailable;
+#else
         return !(Application.internetReachability == NetworkReachability.NotReachable);
+#endif
     }
     #endregion
 }

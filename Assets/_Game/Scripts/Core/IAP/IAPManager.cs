@@ -11,29 +11,30 @@ using UnityEngine.Purchasing.Security;
 public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreListener
 {
 #if UNITY_EDITOR
-    private const string environment = "dev";
+    const string environment = "dev";
 #else
-    private const string environment = "production";
+    const string environment = "production";
 #endif
 
-    [SerializeField] private GameObject blocker;
+    [SerializeField] GameObject blocker;
     [SerializeField, ExposedScriptableObject]
-    private IAPProductContainer container;
+    IAPProductContainer container;
 
-    private bool isInitialized = false;
-    private IStoreController controller;
-    private IExtensionProvider extensions;
+    bool isInitialized = false;
+    IStoreController controller;
+    IExtensionProvider extensions;
+    IAPLocation location;
 
     public bool IsInitialized => isInitialized;
 
-    private async void Start()
+    async void Start()
     {
         await InitializeUnityServices();
 
         Initialize();
     }
     
-    private async Task InitializeUnityServices()
+    async Task InitializeUnityServices()
     {
         try
         {
@@ -41,13 +42,13 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
 
             await UnityServices.InitializeAsync(options);
         }
-        catch (System.Exception exception)
+        catch (Exception exception)
         {
             Debug.LogError("Unity services failed to initialize. Exception: " + exception);
         }
     }
 
-    private void Initialize()
+    void Initialize()
     {
         var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance(AppStore.GooglePlay));
 
@@ -98,12 +99,16 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
 
         if (IsReceiptValid(product))
         {
-            HandlePurchase(product.definition.id);
-            FirebaseManager.Instance.LogIAPPurchased(product.definition.id);
-            AppsflyerEventRegister.SendIAPPurchased(
+            FirebaseManager.Instance.LogIapPurchase(
+                product.definition.id,
+                location.GetDescription());
+
+            AppsFlyerManager.Instance.SendIapPurchase(
                 product.metadata.localizedPrice,
                 product.metadata.isoCurrencyCode, 1,
                 product.definition.id);
+
+            HandlePurchase(product.definition.id);
         }
 
         return PurchaseProcessingResult.Complete;
@@ -118,7 +123,7 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
     }
     #endregion
 
-    private void FetchAdditionalProducts()
+    void FetchAdditionalProducts()
     {
         var additional = new HashSet<ProductDefinition>()
         {
@@ -145,7 +150,7 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
         controller.FetchAdditionalProducts(additional, onSuccess, onFailure);
     }
 
-    private bool IsReceiptValid(Product product)
+    bool IsReceiptValid(Product product)
     {
         bool isValid = true;
 
@@ -167,7 +172,7 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
         return isValid;
     }
 
-    private void HandlePurchase(string id)
+    void HandlePurchase(string id)
     {
         switch (id)
         {
@@ -180,7 +185,7 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
         }
     }
 
-    private void RestoreTransaction()
+    void RestoreTransaction()
     {
 #if UNITY_ANDROID
         foreach (var product in controller.products.all)
@@ -205,14 +210,33 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
 
     public string GetLocalizedPriceString(string id)
     {
-        Product product = controller.products.WithID(id);
-        return product != null ? product.metadata.localizedPriceString : "---";
+        if (isInitialized)
+        {
+            Product product = controller.products.WithID(id);
+
+            if (product != null)
+            {
+                return product.metadata.localizedPriceString;
+            }
+            else
+            {
+                return "---";
+            }
+        }
+        else
+        {
+            return "---";
+        }
     }
 
-    public void OnPurchaseClicked(string id)
+    public void OnPurchaseClicked(string id, IAPLocation location)
     {
-        EnableBlocker();
-        controller.InitiatePurchase(id);
+        if (isInitialized)
+        {
+            EnableBlocker();
+            this.location = location;
+            controller.InitiatePurchase(id);
+        }
     }
 
     public void EnableBlocker()

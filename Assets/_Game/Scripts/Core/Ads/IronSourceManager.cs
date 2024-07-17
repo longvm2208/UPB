@@ -1,9 +1,11 @@
 ﻿using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
+using static MaxSdkBase;
 
 public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
 {
+#if IRON_SOURCE
     // Test
     //const string AppKey = "85460dcd";
     // Product
@@ -13,20 +15,35 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
     [SerializeField] bool isAdaptiveBanner = true;
     [SerializeField] bool isRewardedVideoManualAPI = true;
 
-    public event Action OnInitialized;
+    public event Action Initialized;
 
-    public event Action OnInterstitialAdLoaded;
-    public event Action OnInterstitialAdOpened;
-    public event Action OnInterstitialAdShowFailed;
-    public event Action OnInterstitialAdClicked;
+    public event Action InterstitialAdLoaded;
+    public event Action InterstitialAdOpened;
+    public event Action InterstitialAdShowFailed;
+    public event Action InterstitialAdClicked;
 
-    public event Action OnRewardedAdAvailable;
-    public event Action OnRewardedAdOpened;
-    public event Action<IronSourceError> OnRewardedAdShowFailed;
-    public event Action OnRewardedAdClosed;
-    public event Action OnRewardedAdReceivedReward;
+    public event Action RewardedAdAvailable;
+    public event Action RewardedAdOpened;
+    public event Action<string> RewardedAdShowFailed;
+    public event Action RewardedAdClosed;
+    public event Action RewardedAdReceivedReward;
 
-    public event Action<IronSourceImpressionData> OnImpressionDataReady;
+    public event Action<ImpressionData> ImpressionDataReady;
+
+    float bannerHeight = -1f;
+
+    public float BannerHeight
+    {
+        get
+        {
+            if (bannerHeight < 0f)
+            {
+                CalculateBannerHeight();
+            }
+
+            return bannerHeight;
+        }
+    }
 
     void OnApplicationPause(bool pause)
     {
@@ -59,7 +76,7 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
         IronSourceEvents.onSdkInitializationCompletedEvent += OnSdkInitializationCompleted;
         IronSource.Agent.validateIntegration();
         IronSource.Agent.setManualLoadRewardedVideo(isRewardedVideoManualAPI);
-        IronSourceEvents.onImpressionDataReadyEvent += OnImpressionDataReady;
+        IronSourceEvents.onImpressionDataReadyEvent += OnImpressionDataReady; ;
         InitializeRewardedVideo();
         InitializeInterstitial();
         InitializeBanner();
@@ -75,7 +92,7 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
         LoadRewardedVideo();
         LoadInterstitial();
 
-        OnInitialized?.Invoke();
+        Initialized?.Invoke();
     }
 
     #region REWARDED VIDEO
@@ -96,7 +113,7 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
     // This replaces the RewardedVideoAvailabilityChangedEvent(true) event
     void RewardedVideoOnAdAvailable(IronSourceAdInfo adInfo)
     {
-        OnRewardedAdAvailable?.Invoke();
+        RewardedAdAvailable?.Invoke();
     }
     // Indicates that no ads are available to be displayed
     // This replaces the RewardedVideoAvailabilityChangedEvent(false) event
@@ -104,13 +121,13 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
     // The Rewarded Video ad view has opened. Your activity will loose focus.
     void RewardedVideoOnAdOpenedEvent(IronSourceAdInfo adInfo)
     {
-        OnRewardedAdOpened?.Invoke();
+        RewardedAdOpened?.Invoke();
     }
     // The Rewarded Video ad view is about to be closed. Your activity will regain its focus.
     void RewardedVideoOnAdClosedEvent(IronSourceAdInfo adInfo)
     {
         LoadRewardedVideo();
-        OnRewardedAdClosed?.Invoke();
+        RewardedAdClosed?.Invoke();
     }
     // The user completed to watch the video, and should be rewarded.
     // The placement parameter will include the reward data.
@@ -118,13 +135,13 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
     void RewardedVideoOnAdRewardedEvent(IronSourcePlacement placement, IronSourceAdInfo adInfo)
     {
         LoadRewardedVideo();
-        OnRewardedAdReceivedReward?.Invoke();
+        RewardedAdReceivedReward?.Invoke();
     }
     // The rewarded video ad was failed to show.
     void RewardedVideoOnAdShowFailedEvent(IronSourceError error, IronSourceAdInfo adInfo)
     {
         LoadRewardedVideo();
-        OnRewardedAdShowFailed?.Invoke(error);
+        RewardedAdShowFailed?.Invoke(error.ToString());
     }
     // Invoked when the video ad was clicked.
     // This callback is not supported by all networks, and we recommend using it only if
@@ -159,7 +176,7 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
     // Invoked when the interstitial ad was loaded succesfully.
     void InterstitialOnAdReadyEvent(IronSourceAdInfo adInfo)
     {
-        OnInterstitialAdLoaded?.Invoke();
+        InterstitialAdLoaded?.Invoke();
     }
     // Invoked when the initialization process has failed.
     void InterstitialOnAdLoadFailed(IronSourceError ironSourceError)
@@ -169,18 +186,18 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
     // Invoked when the Interstitial Ad Unit has opened. This is the impression indication. 
     void InterstitialOnAdOpenedEvent(IronSourceAdInfo adInfo)
     {
-        OnInterstitialAdOpened?.Invoke();
+        InterstitialAdOpened?.Invoke();
     }
     // Invoked when end user clicked on the interstitial ad
     void InterstitialOnAdClickedEvent(IronSourceAdInfo adInfo)
     {
-        OnInterstitialAdClicked?.Invoke();
+        InterstitialAdClicked?.Invoke();
     }
     // Invoked when the ad failed to show.
     void InterstitialOnAdShowFailedEvent(IronSourceError ironSourceError, IronSourceAdInfo adInfo)
     {
         LoadInterstitial();
-        OnInterstitialAdShowFailed?.Invoke();
+        InterstitialAdShowFailed?.Invoke();
     }
     // Invoked when the interstitial ad closed and the user went back to the application screen.
     void InterstitialOnAdClosedEvent(IronSourceAdInfo adInfo)
@@ -207,6 +224,8 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
         IronSourceBannerEvents.onAdScreenPresentedEvent += BannerOnAdScreenPresentedEvent;
         IronSourceBannerEvents.onAdScreenDismissedEvent += BannerOnAdScreenDismissedEvent;
         IronSourceBannerEvents.onAdLeftApplicationEvent += BannerOnAdLeftApplicationEvent;
+
+        CalculateBannerHeight();
     }
 
     //Invoked once the banner has loaded
@@ -232,5 +251,43 @@ public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
     public void HideBanner() => IronSource.Agent.hideBanner();
     public void DisplayBanner() => IronSource.Agent.displayBanner();
     public void DestroyBanner() => IronSource.Agent.destroyBanner();
+
+    void CalculateBannerHeight()
+    {
+        if (Application.isEditor)
+        {
+            bannerHeight = 50f;
+        }
+        else if (isAdaptiveBanner)
+        {
+            float width = IronSource.Agent.getDeviceScreenWidth();
+            bannerHeight = IronSource.Agent.getMaximalAdaptiveHeight(width);
+        }
+        else
+        {
+            bannerHeight = 50f;
+        }
+
+        float density = Screen.dpi / 160f;
+        bannerHeight *= density;
+    }
     #endregion
+
+    #region REVENUE
+    private void OnImpressionDataReady(IronSourceImpressionData ironSourceData)
+    {
+        var data = new ImpressionData(
+            "iron_source",
+            "",
+            ironSourceData.country,
+            ironSourceData.adUnit,
+            ironSourceData.adNetwork,
+            ironSourceData.placement,
+            "USD",
+            ironSourceData.revenue);
+
+        ImpressionDataReady?.Invoke(data);
+    }
+    #endregion
+#endif
 }

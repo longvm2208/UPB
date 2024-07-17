@@ -1,21 +1,28 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class DataManager : SingletonMonoBehaviour<DataManager>
 {
-    private const string Key = "GameData";
+    const string Key = "GameData";
 
-    [SerializeField] private GameData gameData;
+    [SerializeField] bool isAutoSaveOnLoad = false;
+    [SerializeField] float autoSaveInterval = 5f;
+    [SerializeField] GameData gameData;
 
-    private bool isLoaded;
+    bool isLoaded;
+    IEnumerator autoSaveCoroutine;
+    WaitForSeconds waitAutoSave;
 
     public bool IsLoaded => isLoaded;
+
+    // Dùng GameData.Instance sẽ ngắn gọn hơn
     public GameData GameData
     {
         get
         {
             if (!isLoaded)
             {
-                Debug.LogError("Cần load data trước khi sử dụng");
+                Debug.LogError("Lỗi truy xuất data trước khi load");
                 return null;
             }
 
@@ -23,7 +30,13 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         }
     }
 
-    private void OnApplicationPause(bool pause)
+    private void Start()
+    {
+        waitAutoSave = new WaitForSeconds(autoSaveInterval);
+        autoSaveCoroutine = AutoSaveRoutine();
+    }
+
+    void OnApplicationPause(bool pause)
     {
         if (pause && isLoaded)
         {
@@ -31,7 +44,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         }
     }
 
-    private void OnApplicationQuit()
+    void OnApplicationQuit()
     {
         if (isLoaded)
         {
@@ -55,6 +68,11 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
             gameData = JsonUtility.FromJson<GameData>(PlayerPrefs.GetString(Key));
         }
 
+        if (isAutoSaveOnLoad)
+        {
+            StartAutoSave();
+        }
+
         isLoaded = true;
     }
 
@@ -65,5 +83,28 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
             PlayerPrefs.SetString(Key, JsonUtility.ToJson(gameData));
             PlayerPrefs.Save();
         }
+    }
+
+    public void StartAutoSave()
+    {
+        if (autoSaveCoroutine != null)
+        {
+            StartCoroutine(autoSaveCoroutine);
+        }
+    }
+
+    public void StopAutoSave()
+    {
+        if (autoSaveCoroutine != null)
+        {
+            StopCoroutine(autoSaveCoroutine);
+        }
+    }
+
+    IEnumerator AutoSaveRoutine()
+    {
+        yield return waitAutoSave;
+
+        SaveData();
     }
 }

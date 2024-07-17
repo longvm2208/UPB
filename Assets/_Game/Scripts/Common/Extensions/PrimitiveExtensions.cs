@@ -4,6 +4,28 @@ using UnityEngine;
 public static class PrimitiveExtensions
 {
     #region INT
+    public static string ToOrdinal(this int number)
+    {
+        if (number <= 0) return number.ToString();
+
+        int lastTwoDigits = number % 100;
+        int lastDigit = number % 10;
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 13) return number + "th";
+
+        switch (lastDigit)
+        {
+            case 1:
+                return number + "st";
+            case 2:
+                return number + "nd";
+            case 3:
+                return number + "rd";
+            default:
+                return number + "th";
+        }
+    }
+
     /// <summary>
     /// Return true if value in range (min..max)
     /// </summary>

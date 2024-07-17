@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class RewardAnimationGroup : MonoBehaviour
 {
-    [SerializeField] private float fadeDuration = 0.5f;
-    [SerializeField] private float particleFlyDuration = 1f;
     [SerializeField] private Text tapToClaimText;
     [SerializeField] BABase backgroundAnimation;
     [SerializeField] RAByType rewardAnimationByType;
