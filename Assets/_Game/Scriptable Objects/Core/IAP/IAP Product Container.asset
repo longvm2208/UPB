@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: IAP Product Container
   m_EditorClassIdentifier: 
   products:
-  - id: 
+  - id: com.test.iap.coin50
     type: 0
