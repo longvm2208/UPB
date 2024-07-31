@@ -6,7 +6,7 @@ using UnityEngine;
 /// <typeparam name="T"></typeparam>
 public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : Component
 {
-    private static T instance;
+    static T instance;
 
     public static T Instance
     {
@@ -19,7 +19,7 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : Compon
 
             if (instance == null)
             {
-                GameObject obj = new GameObject(typeof(T).Name + "-LazyLoad");
+                GameObject obj = new GameObject(typeof(T).Name + " Auto-Generated");
                 instance = obj.AddComponent<T>();
             }
 

@@ -6,7 +6,10 @@ public abstract class PopupBase : MonoBehaviour
 
     protected virtual void OnValidate()
     {
-        myTransform = GetComponent<RectTransform>();
+        if (myTransform == null)
+        {
+            myTransform = GetComponent<RectTransform>();
+        }
     }
 
     public virtual void Open(object args = null)

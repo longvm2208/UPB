@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
 {
-    private static T instance;
+    static T instance;
 
     public static T Instance
     {

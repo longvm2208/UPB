@@ -163,12 +163,22 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
     #region PRIVACY OPTIONS FORM
     public void ShowPrivacyOptionsForm()
     {
+#if APPLOVIN_MAX
+        MaxManager.Instance.ShowPrivacyOptionsForm();
+#elif IRON_SOURCE
         AdMobManager.Instance.ShowPrivacyOptionsForm();
+#endif
     }
 
     public bool IsPrivacyOptionsRequired()
     {
+#if APPLOVIN_MAX
+        return MaxManager.Instance.IsPrivacyOptionsRequired();
+#elif IRON_SOURCE
         return AdMobManager.Instance.IsPrivacyOptionsRequired();
+#else
+        return false;
+#endif
     }
     #endregion
 
@@ -226,10 +236,7 @@ public class AdManager : SingletonMonoBehaviour<AdManager>
 #endif
     }
 
-    bool CanShowInterstitial()
-    {
-        return GameSettings.Instance.IsEnableAds && !GameData.Instance.IsRemoveAds && interstitialTimeCounter <= 0 && rewardTimeCounter <= 0;
-    }
+    bool CanShowInterstitial() => GameSettings.Instance.IsEnableAds && !GameData.Instance.IsRemoveAds && interstitialTimeCounter <= 0 && rewardTimeCounter <= 0;
 
     void SetupShowInterstitial(string placement, Action onFinished)
     {

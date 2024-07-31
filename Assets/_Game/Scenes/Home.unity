@@ -323,7 +323,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &622056741
 Transform:
   m_ObjectHideFlags: 0
@@ -354,7 +354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &977822592
 Transform:
   m_ObjectHideFlags: 0
@@ -485,6 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8377a112795870a45b4d3c1b847d535a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 0}
 --- !u!1 &1562230166
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,6 +667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84543d47a4faf44ca180e9991c61f17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RamManagementConfig: {fileID: 11400000, guid: 4c68083bd919f444f9917a19c6a7598e, type: 2}
   panel: {fileID: 1488412848}
   popupParent: {fileID: 1898890439}
   blocker: {fileID: 328416394}

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿#if UNITY_EDITOR
+using System.ComponentModel;
 
 public enum MediationType
 {
@@ -7,3 +8,4 @@ public enum MediationType
     [Description("IRON_SOURCE")]
     IronSource,
 }
+#endif

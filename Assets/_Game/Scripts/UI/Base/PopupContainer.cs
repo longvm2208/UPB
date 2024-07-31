@@ -1,5 +1,3 @@
-#define ADDRESSABLE
-
 #if ADDRESSABLE
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
@@ -19,9 +17,9 @@ public class PopupContainer : ScriptableObject
     }
 
     [SerializeField, ListDrawerSettings(NumberOfItemsPerPage = 10)]
-    private PopupConfig[] configs;
+    PopupConfig[] configs;
 
-    private Dictionary<PopupId, AssetReferenceGameObject> referenceById;
+    Dictionary<PopupId, AssetReferenceGameObject> referenceById;
 
     public AssetReferenceGameObject this[PopupId id]
     {

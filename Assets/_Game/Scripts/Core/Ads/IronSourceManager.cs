@@ -1,7 +1,6 @@
 ﻿using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
-using static MaxSdkBase;
 
 public class IronSourceManager : SingletonMonoBehaviour<IronSourceManager>
 {

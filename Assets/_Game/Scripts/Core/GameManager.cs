@@ -1,25 +1,24 @@
-using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    const int TargetFps = 60;
+    [SerializeField] bool multiTouchEnabled = true;
+    [SerializeField] int targetFps = 60;
 
-#if UNITY_EDITOR
-    [SerializeField] bool isInternetAvailable = true;
-#endif
     [SerializeField, ExposedScriptableObject]
     GameSettings gameSettings;
+    public GameSettings GameSettings => gameSettings;
 
     DateTime startupTime;
 
     public DateTime Now => startupTime + TimeSpan.FromSeconds(Time.realtimeSinceStartup);
-    public GameSettings GameSettings => gameSettings;
 
     void Awake()
     {
-        Application.targetFrameRate = TargetFps;
+        Application.targetFrameRate = targetFps;
+        Input.multiTouchEnabled = multiTouchEnabled;
+
         startupTime = DateTime.Now;
     }
 
@@ -27,15 +26,4 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     {
         this.startupTime = startupTime;
     }
-
-    #region INTERNET
-    public bool IsInternetAvailable()
-    {
-#if UNITY_EDITOR
-        return isInternetAvailable;
-#else
-        return !(Application.internetReachability == NetworkReachability.NotReachable);
-#endif
-    }
-    #endregion
 }

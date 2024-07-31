@@ -2,7 +2,7 @@
 
 public abstract class PersistentSingletonMonobehaviour<T> : MonoBehaviour where T : Component
 {
-    private static T instance;
+    static T instance;
 
     public static T Instance => instance;
 
