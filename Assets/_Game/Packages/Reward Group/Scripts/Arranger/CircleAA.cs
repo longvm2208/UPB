@@ -52,7 +52,7 @@ public class CircleAA : AABase
             actives[i].DOScale(1f, duration).SetEase(Ease.OutBack);
         }
 
-        ScheduleUtils.DelayTask(duration, () =>
+        Scheduler.DoTask(duration, () =>
         {
             isComplete = true;
         });

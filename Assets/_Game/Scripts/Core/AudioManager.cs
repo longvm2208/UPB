@@ -47,7 +47,7 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
         soundSource.clip = soundById[id];
         soundSource.Play();
 
-        ScheduleUtils.DelayTask(duration, () =>
+        Scheduler.DoTask(duration, () =>
         {
             if (soundSource.loop)
             {

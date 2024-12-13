@@ -1,15 +1,36 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Test : MonoBehaviour
 {
-    [SerializeField] private Transform worldTransform;
-    [SerializeField] private Canvas canvas;
-    [SerializeField] private RectTransform rectTransform;
-    [SerializeField] private Camera canvasCamera;
+    EventSystem eventSystem;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Update()
     {
-        rectTransform.anchoredPosition = VectorUtils.WorldPositionToAnchorPosition(worldTransform.position, rectTransform.parent as RectTransform, canvas, canvasCamera);
+    }
+
+    [Button]
+    public void CheckEventSystem()
+    {
+        if (eventSystem == null) Debug.Log("null");
+    }
+
+    [Button]
+    public void SetEventSystem()
+    {
+        eventSystem = EventSystem.current;
+    }
+
+    [Button]
+    public void ReloadCurrentScene()
+    {
+        SceneManager.LoadScene(3);
     }
 }

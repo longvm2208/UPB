@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public abstract class PointBase : MonoBehaviour
 {
-    [SerializeField] protected FloatRange indexHolderScaleRange = new FloatRange(1f, 1.3f);
+    [SerializeField] protected Vector2 indexHolderScaleRange = new Vector2(1f, 1.3f);
     [SerializeField] protected RectTransform myTransform;
     [SerializeField] protected RectTransform progressTransform;
     [SerializeField] protected RectTransform indexHolderTransform;
@@ -32,21 +32,21 @@ public abstract class PointBase : MonoBehaviour
         progressTransform.ChangeSizeDeltaY(progressHeight);
         myTransform.anchoredPosition = order * progressHeight * Vector2.up;
         progressFillImage.fillAmount = index < currentIndex ? 1f : 0f;
-        float scale = index == currentIndex ? indexHolderScaleRange.max : indexHolderScaleRange.min;
+        float scale = index == currentIndex ? indexHolderScaleRange.y : indexHolderScaleRange.x;
         indexHolderTransform.localScale = scale * Vector3.one;
     }
 
     [Button(ButtonStyle.FoldoutButton)]
     public virtual void PassingAnimation(float duration)
     {
-        indexHolderTransform.DOScale(indexHolderScaleRange.min, duration);
+        indexHolderTransform.DOScale(indexHolderScaleRange.x, duration);
         ProgressPassingAnimation(duration);
     }
 
     [Button(ButtonStyle.FoldoutButton)]
     public virtual void ReachingAnimation(float duration)
     {
-        indexHolderTransform.DOScale(indexHolderScaleRange.max, duration);
+        indexHolderTransform.DOScale(indexHolderScaleRange.y, duration);
     }
 
     protected virtual void ProgressPassingAnimation(float duration)

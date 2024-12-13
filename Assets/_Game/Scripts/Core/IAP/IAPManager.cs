@@ -99,11 +99,11 @@ public class IAPManager : SingletonMonoBehaviour<IAPManager>, IDetailedStoreList
 
         if (IsReceiptValid(product))
         {
-            FirebaseManager.Instance.LogIapPurchase(
+            FirebaseManager.LogIapPurchase(
                 product.definition.id,
                 location.GetDescription());
 
-            AppsFlyerManager.Instance.SendIapPurchase(
+            AppsFlyerManager.SendIapPurchase(
                 product.metadata.localizedPrice,
                 product.metadata.isoCurrencyCode, 1,
                 product.definition.id);

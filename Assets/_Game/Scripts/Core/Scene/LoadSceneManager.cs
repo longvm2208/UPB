@@ -133,8 +133,8 @@ public class LoadSceneManager : SingletonMonoBehaviour<LoadSceneManager>
     void OnSceneSwitching()
     {
         DOTween.KillAll();
-        DataManager.Instance.SaveData();
-        ScheduleUtils.StopAllCoroutines();
+        DataManager.Ins.SaveData();
+        Scheduler.CancelAllTasks();
     }
 
     public void OpenAnimation(Action onComplete = null)

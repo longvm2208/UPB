@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public class GameData
 {
-    public static GameData Instance => DataManager.Instance.GameData;
+    public static GameData Instance => DataManager.Ins.GameData;
 
     [Header("AUDIO & VIBRATION")]
     public bool IsSoundEnabled;

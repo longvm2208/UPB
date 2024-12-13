@@ -13,15 +13,15 @@ public class IAPButtonPurchase : MonoBehaviour
 
     IEnumerator Start()
     {
-        yield return new WaitUntil(() => IAPManager.Instance.IsInitialized);
+        yield return new WaitUntil(() => IAPManager.Ins.IsInitialized);
 
-        priceTmp.text = IAPManager.Instance.GetLocalizedPriceString(id);
+        priceTmp.text = IAPManager.Ins.GetLocalizedPriceString(id);
     }
 
     #region UI Events
     public void OnClick()
     {
-        IAPManager.Instance.OnPurchaseClicked(id, location);
+        IAPManager.Ins.OnPurchaseClicked(id, location);
     }
     #endregion
 }

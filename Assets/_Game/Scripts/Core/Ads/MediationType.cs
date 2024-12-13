@@ -1,11 +1,11 @@
-﻿#if UNITY_EDITOR
-using System.ComponentModel;
+﻿//#if UNITY_EDITOR
+//using System.ComponentModel;
 
-public enum MediationType
-{
-    [Description("APPLOVIN_MAX")]
-    AppLovinMax,
-    [Description("IRON_SOURCE")]
-    IronSource,
-}
-#endif
+//public enum MediationType
+//{
+//    [Description("APPLOVIN_MAX")]
+//    AppLovinMax,
+//    [Description("IRON_SOURCE")]
+//    IronSource,
+//}
+//#endif

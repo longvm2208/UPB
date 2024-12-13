@@ -5,14 +5,14 @@ using UnityEngine;
 [Serializable]
 public class FadeCanvasGroups : AnimationBase
 {
-    [SerializeField] FloatRange range;
+    [SerializeField] Vector2 range;
     [SerializeField] CanvasGroup[] canvasGroups;
 
     public override void Prepare()
     {
         for (int i = 0; i < canvasGroups.Length; i++)
         {
-            canvasGroups[i].alpha = range.min;
+            canvasGroups[i].alpha = range.x;
         }
     }
 
@@ -20,7 +20,7 @@ public class FadeCanvasGroups : AnimationBase
     {
         for (int i = 0; i < canvasGroups.Length; i++)
         {
-            canvasGroups[i].DOFade(range.max, duration);
+            canvasGroups[i].DOFade(range.y, duration);
         }
     }
 }

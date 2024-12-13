@@ -8,7 +8,7 @@ public abstract class PopupWithCloseAnimation : PopupBase
     {
         animationGroup.Play(() =>
         {
-            UIManager.Instance.OnPopupClose();
+            UIManager.Ins.OnPopupClose();
             gameObject.SetActive(false);
         });
     }

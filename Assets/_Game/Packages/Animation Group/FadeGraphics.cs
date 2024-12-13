@@ -6,14 +6,14 @@ using UnityEngine.UI;
 [Serializable]
 public class FadeGraphics : AnimationBase
 {
-    [SerializeField] FloatRange range;
+    [SerializeField] Vector2 range;
     [SerializeField] Graphic[] graphics;
 
     public override void Prepare()
     {
         for (int i = 0; i < graphics.Length; i++)
         {
-            graphics[i].ChangeAlpha(range.min);
+            graphics[i].ChangeAlpha(range.x);
         }
     }
 
@@ -21,7 +21,7 @@ public class FadeGraphics : AnimationBase
     {
         for (int i = 0; i < graphics.Length; i++)
         {
-            graphics[i].DOFade(range.max, duration);
+            graphics[i].DOFade(range.y, duration);
         }
     }
 }

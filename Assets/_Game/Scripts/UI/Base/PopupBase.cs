@@ -14,14 +14,14 @@ public abstract class PopupBase : MonoBehaviour
 
     public virtual void Open(object args = null)
     {
-        UIManager.Instance.OnPopupOpen();
+        UIManager.Ins.OnPopupOpen();
         gameObject.SetActive(true);
         myTransform.SetAsLastSibling();
     }
 
     public virtual void Close()
     {
-        UIManager.Instance.OnPopupClose();
+        UIManager.Ins.OnPopupClose();
         gameObject.SetActive(false);
     }
 }

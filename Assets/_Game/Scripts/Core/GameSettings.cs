@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Scriptable Objects/Game Settings")]
 public class GameSettings : ScriptableObject
 {
-    public static GameSettings Instance => GameManager.Instance.GameSettings;
+    public static GameSettings Instance => GameManager.Ins.GameSettings;
 
     public bool IsInternetTime = true;
     public bool IsEnableAds = true;

@@ -4,6 +4,6 @@ public class GameBootstrapper : MonoBehaviour
 {
     private void Start()
     {
-        LoadSceneManager.Instance.OpenAnimation();
+        LoadSceneManager.Ins.OpenAnimation();
     }
 }

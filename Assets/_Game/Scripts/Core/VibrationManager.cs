@@ -1,18 +1,18 @@
 using MoreMountains.NiceVibrations;
 
-public class VibrationManager : Singleton<VibrationManager>
+public static class VibrationManager
 {
-    public void Initialize()
+    public static void Initialize()
     {
         ToggleVibration();
     }
 
-    public void ToggleVibration()
+    public static void ToggleVibration()
     {
         MMVibrationManager.SetHapticsActive(GameData.Instance.IsVibrationEnabled);
     }
 
-    public void Vibrate(HapticTypes type = HapticTypes.MediumImpact)
+    public static void Vibrate(HapticTypes type = HapticTypes.MediumImpact)
     {
         if (GameData.Instance.IsVibrationEnabled)
         {

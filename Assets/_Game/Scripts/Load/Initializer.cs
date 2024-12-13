@@ -36,20 +36,20 @@ public class Initializer : MonoBehaviour
             timeFetcher.FetchTimeFromServer(1, (DateTime startupTime) =>
             {
                 startupTime -= TimeSpan.FromSeconds(Time.realtimeSinceStartup);
-                GameManager.Instance.SetStartupTime(startupTime);
+                GameManager.Ins.SetStartupTime(startupTime);
             });
         }
 
         // Đợi để lấy time internet
         yield return new WaitForSeconds(1.5f);
 
-        DataManager.Instance.LoadData();
-        AudioManager.Instance.Initialize();
-        VibrationManager.Instance.Initialize();
+        DataManager.Ins.LoadData();
+        AudioManager.Ins.Initialize();
+        VibrationManager.Initialize();
 
         yield return new WaitForSeconds(1.5f);
 
-        LoadSceneManager.Instance.LoadScene(SceneId.Home, LoadSceneManager.Mode.Before, (float progress) =>
+        LoadSceneManager.Ins.LoadScene(SceneId.Home, LoadSceneManager.Mode.Before, (float progress) =>
         {
             SetProgress(0.6f + progress / 0.9f * 0.4f);
         }, () =>

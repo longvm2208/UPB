@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AppsFlyerManager : Singleton<AppsFlyerManager>
+public static class AppsFlyerManager
 {
-    public void Initialize()
+    public static void Initialize()
     {
         AppsFlyerAdRevenue.start();
     }
 
     #region SEND EVENT
-    void SendEvent(string name, Dictionary<string, string> values)
+    public static void SendEvent(string name, Dictionary<string, string> values)
     {
         if (Debug.isDebugBuild || Application.isEditor) return;
 
@@ -18,7 +18,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     }
 
     #region IAP EVENT
-    public void SendIapPurchase(decimal revenue, string currency, int quantity, string contentId)
+    public static void SendIapPurchase(decimal revenue, string currency, int quantity, string contentId)
     {
         float modifiedRevenue = (float)revenue * 0.63f;
         string revenueString = modifiedRevenue.ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
@@ -37,7 +37,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     /// <summary>
     /// Trigger khi gọi hàm show interstitial ad
     /// </summary>
-    public void SendInterstitialAdEligible()
+    public static void SendInterstitialAdEligible()
     {
         SendEvent("af_inters_ad_eligible", new());
     }
@@ -45,7 +45,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     /// <summary>
     /// Trigger khi load interstitial ad thành công (event của mediation)
     /// </summary>
-    public void SendInterstitialAdApiCalled()
+    public static void SendInterstitialAdApiCalled()
     {
         SendEvent("af_inters_api_called", new());
     }
@@ -53,7 +53,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     /// <summary>
     /// Trigger khi interstitial ad hiển thị thành công (event của mediation)
     /// </summary>
-    public void SendInterstitialAdDisplayed()
+    public static void SendInterstitialAdDisplayed()
     {
         SendEvent("af_inters_displayed", new());
     }
@@ -61,7 +61,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     /// <summary>
     /// Trigger khi gọi hàm show rewarded ad
     /// </summary>
-    public void SendRewardedAdEligible()
+    public static void SendRewardedAdEligible()
     {
         SendEvent("af_rewarded_ad_eligible", new());
     }
@@ -69,7 +69,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     /// <summary>
     /// Trigger khi load rewarded ad thành công (event của mediation)
     /// </summary>
-    public void SendRewardedAdApiCalled()
+    public static void SendRewardedAdApiCalled()
     {
         SendEvent("af_rewarded_api_called", new());
     }
@@ -77,7 +77,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     /// <summary>
     /// Trigger khi hiển thị rewarded ad thành công (event của mediation)
     /// </summary>
-    public void SendRewardedAdDisplayed()
+    public static void SendRewardedAdDisplayed()
     {
         SendEvent("af_rewarded_displayed", new());
     }
@@ -85,7 +85,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     /// <summary>
     /// Trigger khi user tắt rewarded ad và nhận reward (event của mediation)
     /// </summary>
-    public void SendRewardedAdComplete()
+    public static void SendRewardedAdComplete()
     {
         SendEvent("af_rewarded_ad_completed", new());
     }
@@ -93,7 +93,7 @@ public class AppsFlyerManager : Singleton<AppsFlyerManager>
     #endregion
 
     #region LOG AD REVENUE
-    public void LogAdRevenue(double revenue, Dictionary<string, string> parameters)
+    public static void LogAdRevenue(double revenue, Dictionary<string, string> parameters)
     {
         AppsFlyerAdRevenue.logAdRevenue("applovin_max",
             AppsFlyerAdRevenueMediationNetworkType.

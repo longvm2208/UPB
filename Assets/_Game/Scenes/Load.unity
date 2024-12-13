@@ -1180,6 +1180,7 @@ MonoBehaviour:
   canvas: {fileID: 1893950472}
   blocker: {fileID: 381061649}
   adNotLoadedYet: {fileID: 1348507002}
+  bannerHeight: -1
 --- !u!114 &1172801636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1194,7 +1195,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableMediationDebugger: 0
   isAdaptiveBanner: 1
-  bannerColor: {r: 0, g: 0, b: 0, a: 0}
+  bannerColor:
+    r: 0
+    g: 0
+    b: 0
+    a: 0
+  interstitialRetryAttempt: 0
+  rewardedRetryAttempt: 0
+  bannerHeight: -1
 --- !u!114 &1172801637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1220,6 +1228,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   checkConsentStatusOnStart: 0
+  canRequestAd: 0
+  isInitialized: 0
 --- !u!1 &1348507002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1370,7 +1380,7 @@ GameObject:
   - component: {fileID: 1450634029}
   - component: {fileID: 1450634030}
   m_Layer: 0
-  m_Name: Persistent
+  m_Name: Dont Destroy On Load
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1412,7 +1422,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450634027}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 695474c4328ba384298fab2e63229874, type: 3}
+  m_Script: {fileID: 11500000, guid: 34db49db7b345d64393eff7ce7ed565d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1570390658
@@ -1831,6 +1841,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc7e1f152a3725f4c828486345140433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiTouchEnabled: 1
+  targetFps: 60
   gameSettings: {fileID: 11400000, guid: f36a5916f1c2dc541b967f1952f72808, type: 2}
 --- !u!1 &2134597685
 GameObject:
