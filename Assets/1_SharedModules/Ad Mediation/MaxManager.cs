@@ -28,15 +28,33 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
     [SerializeField] bool showMediationDebugger;
     [SerializeField] bool adaptiveBanner;
     [SerializeField] Color bannerBackgroundColor;
+    [SerializeField] GameObject blocker;
 
     bool loadingInterstitial;
     bool loadingRewarded;
+    bool receivedReward;
     int interstitialRetryAttempt;
     int rewardedRetryAttempt;
+    float interstitialTimer;
+    float rewardedTimer;
+    string rewardedPlacement;
 
     Action onInterstitialFinish;
     Action onRewardedSuccess;
     Action onRewardedFail;
+
+    private void Update()
+    {
+        if (interstitialTimer > 0)
+        {
+            interstitialTimer -= Time.deltaTime;
+        }
+
+        if (rewardedTimer > 0)
+        {
+            rewardedTimer -= Time.deltaTime;
+        }
+    }
 
     public void Init()
     {
@@ -57,6 +75,11 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
         MaxSdk.InitializeSdk();
     }
 
+    bool IsInternetAvailable()
+    {
+        return Application.internetReachability != NetworkReachability.NotReachable;
+    }
+
     #region Interstitial
     public void InitializeInterstitialAds()
     {
@@ -66,16 +89,9 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
         MaxSdkCallbacks.Interstitial.OnAdClickedEvent += OnInterstitialClickedEvent;
         MaxSdkCallbacks.Interstitial.OnAdHiddenEvent += OnInterstitialHiddenEvent;
         MaxSdkCallbacks.Interstitial.OnAdDisplayFailedEvent += OnInterstitialAdFailedToDisplayEvent;
+        MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnInterstitialRevenuePaidEvent;
         
         LoadInterstitial();
-    }
-
-    private void LoadInterstitial()
-    {
-        if (loadingInterstitial || IsInterstitialReady()) return;
-
-        loadingInterstitial = true;
-        MaxSdk.LoadInterstitial(InterstitialAdUnitId);
     }
 
     private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -97,24 +113,43 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
 
     private void OnInterstitialDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) 
     {
+        blocker.SetActive(false);
+
         FirebaseManager.ad_inter_show();
+        AppsFlyerManager.af_inters_displayed();
     }
 
     private void OnInterstitialAdFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
     {
+        blocker.SetActive(false);
         LoadInterstitial();
+        onInterstitialFinish?.Invoke();
+        onInterstitialFinish = null;
 
-        FirebaseManager.ad_inter_fail(errorInfo.Message);
+        FirebaseManager.ad_inter_fail(errorInfo.ToString());
     }
 
-    private void OnInterstitialClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) 
-    {
-        FirebaseManager.ad_inter_click();
-    }
+    private void OnInterstitialClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
 
     private void OnInterstitialHiddenEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
+        blocker.SetActive(false);
         LoadInterstitial();
+        onInterstitialFinish?.Invoke();
+        onInterstitialFinish = null;
+    }
+
+    private void OnInterstitialRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
+    {
+
+    }
+
+    private void LoadInterstitial()
+    {
+        if (!AdsManager.Ins.AdsEnabled || AdsManager.Ins.AdsRemoved || loadingInterstitial || !IsInternetAvailable() || IsInterstitialReady()) return;
+
+        loadingInterstitial = true;
+        MaxSdk.LoadInterstitial(InterstitialAdUnitId);
     }
 
     public bool IsInterstitialReady()
@@ -124,9 +159,26 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
 
     public void ShowInterstitial(Action onFinish)
     {
+        if (!AdsManager.Ins.AdsEnabled || AdsManager.Ins.AdsRemoved || interstitialTimer > 0 || rewardedTimer > 0)
+        {
+            onFinish?.Invoke();
+            return;
+        }
+
         if (IsInterstitialReady())
         {
+            blocker.SetActive(true);
+            onInterstitialFinish = onFinish;
+            interstitialTimer = AdsManager.Ins.InterstitialCapping;
             MaxSdk.ShowInterstitial(InterstitialAdUnitId);
+
+            FirebaseManager.ad_inter_click();
+            AppsFlyerManager.af_inters_ad_eligible();
+        }
+        else
+        {
+            LoadInterstitial();
+            onFinish?.Invoke();
         }
     }
     #endregion
@@ -134,7 +186,6 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
     #region Rewarded
     public void InitializeRewardedAds()
     {
-        // Attach callback
         MaxSdkCallbacks.Rewarded.OnAdLoadedEvent += OnRewardedAdLoadedEvent;
         MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent += OnRewardedAdLoadFailedEvent;
         MaxSdkCallbacks.Rewarded.OnAdDisplayedEvent += OnRewardedAdDisplayedEvent;
@@ -144,53 +195,66 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
         MaxSdkCallbacks.Rewarded.OnAdDisplayFailedEvent += OnRewardedAdFailedToDisplayEvent;
         MaxSdkCallbacks.Rewarded.OnAdReceivedRewardEvent += OnRewardedAdReceivedRewardEvent;
 
-        // Load the first rewarded ad
         LoadRewardedAd();
-    }
-
-    private void LoadRewardedAd()
-    {
-        MaxSdk.LoadRewardedAd(RewardedAdUnitId);
     }
 
     private void OnRewardedAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        // Rewarded ad is ready for you to show. MaxSdk.IsRewardedAdReady(adUnitId) now returns 'true'.
-
-        // Reset retry attempt
+        loadingRewarded = false;
         rewardedRetryAttempt = 0;
+
+        AppsFlyerManager.af_rewarded_api_called();
     }
 
     private void OnRewardedAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo)
     {
-        // Rewarded ad failed to load
-        // AppLovin recommends that you retry with exponentially higher delays, up to a maximum delay (in this case 64 seconds).
-
+        loadingRewarded = false;
         rewardedRetryAttempt++;
         double retryDelay = Math.Pow(2, Math.Min(6, rewardedRetryAttempt));
-
         Invoke(nameof(LoadRewardedAd), (float)retryDelay);
     }
 
-    private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
+    private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
+    {
+        blocker.SetActive(false);
+
+        FirebaseManager.ads_reward_show(rewardedPlacement);
+        AppsFlyerManager.af_rewarded_displayed();
+    }
 
     private void OnRewardedAdFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo)
     {
-        // Rewarded ad failed to display. AppLovin recommends that you load the next ad.
+        blocker.SetActive(false);
+        onRewardedFail?.Invoke();
+        onRewardedFail = null;
         LoadRewardedAd();
+
+        FirebaseManager.ads_reward_fail(rewardedPlacement, errorInfo.ToString());
     }
 
     private void OnRewardedAdClickedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) { }
 
     private void OnRewardedAdHiddenEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
     {
-        // Rewarded ad is hidden. Pre-load the next ad
+        blocker.SetActive(false);
         LoadRewardedAd();
+
+        if (receivedReward)
+        {
+            receivedReward = false;
+            onRewardedSuccess?.Invoke();
+            onRewardedSuccess = null;
+        }
+        else
+        {
+            onRewardedFail?.Invoke();
+            onRewardedFail = null;
+        }
     }
 
     private void OnRewardedAdReceivedRewardEvent(string adUnitId, MaxSdk.Reward reward, MaxSdkBase.AdInfo adInfo)
     {
-        // The rewarded ad displayed and the user should receive the reward.
+        receivedReward = true;
     }
 
     private void OnRewardedAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -198,16 +262,43 @@ public class MaxManager : SingletonMonoBehaviour<MaxManager>
         // Ad revenue paid. Use this callback to track user revenue.
     }
 
+    private void LoadRewardedAd()
+    {
+        if (!AdsManager.Ins.AdsEnabled || loadingRewarded || !IsInternetAvailable() || IsRewardedAdReady()) return;
+
+        loadingRewarded = true;
+        MaxSdk.LoadRewardedAd(RewardedAdUnitId);
+    }
+
     public bool IsRewardedAdReady()
     {
         return MaxSdk.IsRewardedAdReady(RewardedAdUnitId);
     }
 
-    public void ShowRewardedAd()
+    public void ShowRewardedAd(string placement = "", Action onSuccess = null, Action onFail = null)
     {
+        if (!AdsManager.Ins.AdsEnabled)
+        {
+            onSuccess?.Invoke();
+            return;
+        }
+
         if (IsRewardedAdReady())
         {
+            rewardedPlacement = placement;
+            blocker.SetActive(true);
+            onRewardedSuccess = onSuccess;
+            onRewardedFail = onFail;
+            rewardedTimer = AdsManager.Ins.RewardedCapping;
             MaxSdk.ShowRewardedAd(RewardedAdUnitId);
+
+            FirebaseManager.ads_reward_click(placement);
+            AppsFlyerManager.af_rewarded_ad_eligible();
+        }
+        else
+        {
+            LoadRewardedAd();
+            onFail?.Invoke();
         }
     }
     #endregion

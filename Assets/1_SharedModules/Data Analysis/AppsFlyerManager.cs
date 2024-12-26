@@ -9,12 +9,24 @@ public static class AppsFlyerManager
         AppsFlyerAdRevenue.start();
     }
 
-    #region SEND EVENT
+    #region Send Event
     public static void SendEvent(string name, Dictionary<string, string> values)
     {
         if (Debug.isDebugBuild || Application.isEditor) return;
 
         AppsFlyer.sendEvent(name, values);
+    }
+
+    public static void af_purchase(decimal af_revenue, string af_currency, int af_quantity, string af_content_id)
+    {
+        float modifiedRevenue = (float)af_revenue * 0.63f;
+        SendEvent("af_purchase", new()
+        {
+            { "af_revenue", modifiedRevenue.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) },
+            { "af_currency", af_currency },
+            { "af_quantity", af_quantity.ToString() },
+            { "af_content_id", af_content_id },
+        });
     }
 
     #region Interstitial
@@ -55,18 +67,6 @@ public static class AppsFlyerManager
         SendEvent("af_rewarded_ad_completed", new());
     }
     #endregion
-
-    public static void af_purchase(decimal af_revenue, string af_currency, int af_quantity, string af_content_id)
-    {
-        float modifiedRevenue = (float)af_revenue * 0.63f;
-        SendEvent("af_purchase", new()
-        {
-            { "af_revenue", modifiedRevenue.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) },
-            { "af_currency", af_currency },
-            { "af_quantity", af_quantity.ToString() },
-            { "af_content_id", af_content_id },
-        });
-    }
     #endregion
 
     #region Log Ad Revenue
